@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="MerchantSyncStatus_Display" xml:space="preserve">
+    <value>Merchant sync status</value>
+  </data>
+  <data name="MerchantSyncStatus_Description" xml:space="preserve">
+    <value>Where the merchant is in onboarding and what the payments platform last said.</value>
+  </data>
+  <data name="Stage_Display" xml:space="preserve">
+    <value>Lifecycle stage</value>
+  </data>
+  <data name="Stage_Description" xml:space="preserve">
+    <value>The merchant's lifecycle stage (mcb_lifecyclestage).</value>
+  </data>
+  <data name="PlatformStatus_Display" xml:space="preserve">
+    <value>Platform status</value>
+  </data>
+  <data name="PlatformStatus_Description" xml:space="preserve">
+    <value>Status on the payments platform (mcb_platformstatus).</value>
+  </data>
+  <data name="KycDecision_Display" xml:space="preserve">
+    <value>KYC decision</value>
+  </data>
+  <data name="KycDecision_Description" xml:space="preserve">
+    <value>The platform's KYC decision (mcb_kycdecision).</value>
+  </data>
+  <data name="RiskBand_Display" xml:space="preserve">
+    <value>Risk band</value>
+  </data>
+  <data name="RiskBand_Description" xml:space="preserve">
+    <value>The platform's risk band (mcb_riskband).</value>
+  </data>
+  <data name="LastSyncedOn_Display" xml:space="preserve">
+    <value>Last platform update</value>
+  </data>
+  <data name="LastSyncedOn_Description" xml:space="preserve">
+    <value>When the bridge last applied a platform event (mcb_lastsyncedon).</value>
+  </data>
+</root>

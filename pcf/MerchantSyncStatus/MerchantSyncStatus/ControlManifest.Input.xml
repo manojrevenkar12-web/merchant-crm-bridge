@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<manifest>
+  <control namespace="MerchantCrmBridge" constructor="MerchantSyncStatus" version="1.0.0"
+           display-name-key="MerchantSyncStatus_Display" description-key="MerchantSyncStatus_Description" control-type="standard">
+    <external-service-usage enabled="false" />
+    <property name="stage" display-name-key="Stage_Display" description-key="Stage_Description" of-type="OptionSet" usage="bound" required="true" />
+    <property name="platformStatus" display-name-key="PlatformStatus_Display" description-key="PlatformStatus_Description" of-type="OptionSet" usage="input" required="false" />
+    <property name="kycDecision" display-name-key="KycDecision_Display" description-key="KycDecision_Description" of-type="OptionSet" usage="input" required="false" />
+    <property name="riskBand" display-name-key="RiskBand_Display" description-key="RiskBand_Description" of-type="OptionSet" usage="input" required="false" />
+    <property name="lastSyncedOn" display-name-key="LastSyncedOn_Display" description-key="LastSyncedOn_Description" of-type="DateAndTime.DateAndTime" usage="input" required="false" />
+    <resources>
+      <code path="index.ts" order="1" />
+      <css path="css/MerchantSyncStatus.css" order="1" />
+      <resx path="strings/MerchantSyncStatus.1033.resx" version="1.0.0" />
+    </resources>
+  </control>
+</manifest>

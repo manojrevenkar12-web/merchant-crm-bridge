@@ -185,3 +185,30 @@ jobs:
           path: |
             web/playwright-report
             api.log
+
+  pcf:
+    name: PCF control (tests, build, solution package)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - name: Test and build the control
+        working-directory: pcf/MerchantSyncStatus
+        run: npm ci && npm test && npm run build
+      - run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+      - name: Package it in a solution (managed and unmanaged)
+        run: |
+          mkdir -p artifacts/MerchantCrmBridgeControls && cd artifacts/MerchantCrmBridgeControls
+          pac solution init --publisher-name merchantcrmbridge --publisher-prefix mcb
+          pac solution add-reference --path ../../pcf/MerchantSyncStatus
+          dotnet build -c Release -p:SolutionPackageType=Both
+          find bin -name "*.zip" -print
+      - uses: actions/upload-artifact@v5
+        with:
+          name: pcf-solution
+          path: artifacts/MerchantCrmBridgeControls/bin/Release/*.zip

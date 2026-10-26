@@ -958,9 +958,10 @@
   ],
   "pcfControls": [
     {
-      "name": "mcb_MerchantCrmBridge.MerchantSyncStatus",
+      "name": "MerchantCrmBridge.MerchantSyncStatus",
       "boundTo": "account.mcb_lifecyclestage",
-      "source": "pcf/MerchantSyncStatus"
+      "source": "pcf/MerchantSyncStatus",
+      "solution": "MerchantCrmBridgeControls"
     }
   ]
 }
