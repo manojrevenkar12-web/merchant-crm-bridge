@@ -1,5 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <!-- The Function App (Flex Consumption, isolated worker): the Kafka-triggered consumer and the timers for
+  <!-- The Function App (Elastic Premium, isolated worker): the Kafka-triggered consumer and the timers for
        the outbox relay and the reconciler. Built in CI (the Functions SDK restores its extension bundle from
        nuget.org at build time); the logic it hosts lives in Bridge.Core and Bridge.Hosting and is tested there. -->
   <PropertyGroup>

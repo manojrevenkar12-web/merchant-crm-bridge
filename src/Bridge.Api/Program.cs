@@ -2,6 +2,15 @@ using Bridge.Hosting;
 using Bridge.Api;
 using Bridge.Core.Ports;
 
+// The container health check: the image has no curl, so the app checks itself.
+if (args.Contains("--healthcheck"))
+{
+    using var probe = new HttpClient { Timeout = TimeSpan.FromSeconds(2) };
+    try { return (await probe.GetAsync(new Uri("http://127.0.0.1:8080/healthz"))).IsSuccessStatusCode ? 0 : 1; }
+    catch (HttpRequestException) { return 1; }
+    catch (TaskCanceledException) { return 1; }
+}
+
 var builder = WebApplication.CreateBuilder(args);
 var settings = builder.Configuration.GetSection("Bridge").Get<BridgeSettings>() ?? new BridgeSettings();
 
@@ -41,6 +50,7 @@ if (settings.Auth.Mode.Equals("Local", StringComparison.OrdinalIgnoreCase))
 app.MapFallbackToFile("index.html");
 
 await app.RunAsync();
+return 0;
 
 internal sealed record DevTokenRequest(string? Name, string[]? Roles);
 

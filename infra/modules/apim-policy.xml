@@ -1,0 +1,33 @@
+<policies>
+  <inbound>
+    <base />
+    <!-- Only Entra tokens for this API, with one of its app roles. The API checks the role per operation. -->
+    <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="A valid token for the merchant bridge is required." require-scheme="Bearer">
+      <openid-config url="https://login.microsoftonline.com/{tenant}/v2.0/.well-known/openid-configuration" />
+      <audiences>
+        <audience>{audience}</audience>
+      </audiences>
+      <required-claims>
+        <claim name="roles" match="any">
+          <value>Sync.Read</value>
+          <value>Sync.Operate</value>
+        </claim>
+      </required-claims>
+    </validate-jwt>
+    <!-- Per caller: an operator's console polls every few seconds; a runaway script is cut off. -->
+    <rate-limit-by-key calls="300" renewal-period="60" counter-key="@(context.Request.Headers.GetValueOrDefault(&quot;Authorization&quot;,&quot;&quot;).AsJwt()?.Claims.GetValueOrDefault(&quot;oid&quot;, context.Subscription.Id))" />
+    <set-header name="X-Forwarded-Host" exists-action="override">
+      <value>@(context.Request.OriginalUrl.Host)</value>
+    </set-header>
+  </inbound>
+  <backend>
+    <base />
+  </backend>
+  <outbound>
+    <base />
+    <set-header name="X-Powered-By" exists-action="delete" />
+  </outbound>
+  <on-error>
+    <base />
+  </on-error>
+</policies>

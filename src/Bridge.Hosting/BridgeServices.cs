@@ -38,7 +38,7 @@ public static class BridgeServices
         }
         else
         {
-            services.AddSingleton<IEventLog>(_ => new KafkaEventLog(new KafkaOptions
+            services.TryAddSingleton<IEventLog>(_ => new KafkaEventLog(new KafkaOptions
             {
                 BootstrapServers = settings.Kafka.BootstrapServers,
                 SecurityProtocol = settings.Kafka.SecurityProtocol,

@@ -4,6 +4,7 @@ using Bridge.Core.Messaging;
 using Bridge.Core.Ports;
 using Bridge.Dataverse;
 using Bridge.Emulator;
+using Bridge.Kafka;
 using Bridge.PlatformSim;
 
 namespace Bridge.Api;
@@ -25,13 +26,15 @@ public sealed class DemoWorld : IHostedService, IAsyncDisposable
     private WebApplication? _platform;
     private Task? _sales;
 
-    public InMemoryEventLog Log { get; } = new(partitions: 4);
+    /// <summary>The in-memory log, or Apache Kafka when Kafka:BootstrapServers is set (docker compose).</summary>
+    public IEventLog Log { get; }
     public Simulator Simulator { get; }
 
-    private DemoWorld(Uri emulatorUrl, Uri platformUrl)
+    private DemoWorld(Uri emulatorUrl, Uri platformUrl, IEventLog log)
     {
         _emulatorUrl = emulatorUrl;
         _platformUrl = platformUrl;
+        Log = log;
         var chaos = new ChaosOptions { Duplicate = 0.08, Reorder = 0.08, Drop = 0.02, OldVolumeSchema = 0.3, PoisonPerHundredTicks = 2 };
         Simulator = new Simulator(Log, chaos, seed: 2026, TimeProvider.System);
     }
@@ -40,11 +43,13 @@ public sealed class DemoWorld : IHostedService, IAsyncDisposable
     /// the API's own host is the first one built in the process.</summary>
     public static DemoWorld Configure(BridgeSettings settings)
     {
-        var world = new DemoWorld(new Uri($"http://127.0.0.1:{FreePort()}/"), new Uri($"http://127.0.0.1:{FreePort()}/"));
+        IEventLog log = string.IsNullOrWhiteSpace(settings.Kafka.BootstrapServers)
+            ? new InMemoryEventLog(partitions: 4)
+            : new KafkaEventLog(new KafkaOptions { BootstrapServers = settings.Kafka.BootstrapServers, Partitions = 4 });
+        var world = new DemoWorld(new Uri($"http://127.0.0.1:{FreePort()}/"), new Uri($"http://127.0.0.1:{FreePort()}/"), log);
         settings.Dataverse.EnvironmentUrl = world._emulatorUrl;
         settings.Dataverse.Credential = "Static";
         settings.Platform.GraphQlEndpoint = new Uri(world._platformUrl, "graphql");
-        settings.Kafka.BootstrapServers = null;
         settings.Auth.Mode = "Local";
         settings.RelayInterval = TimeSpan.FromSeconds(1);
         settings.ReconcileInterval = TimeSpan.FromSeconds(45);
@@ -53,6 +58,8 @@ public sealed class DemoWorld : IHostedService, IAsyncDisposable
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {
+        if (Log is KafkaEventLog kafka)
+            await kafka.EnsureTopicsAsync([Topics.PlatformEvents, Topics.CrmEvents, Topics.PlatformEventsDlq], cancellationToken);
         var emulatorOptions = new EmulatorOptions { MaxLatency = TimeSpan.FromMilliseconds(15), BaseUrl = new Uri(_emulatorUrl, "api/data/v9.2/").ToString() };
         _emulator = EmulatorHost.Build(["--urls", _emulatorUrl.ToString().TrimEnd('/')], emulatorOptions);
         await _emulator.StartAsync(cancellationToken);
@@ -141,6 +148,7 @@ public sealed class DemoWorld : IHostedService, IAsyncDisposable
     {
         if (_platform is not null) await _platform.DisposeAsync();
         if (_emulator is not null) await _emulator.DisposeAsync();
+        (Log as IDisposable)?.Dispose();
         _stop.Dispose();
     }
 }

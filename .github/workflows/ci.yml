@@ -212,3 +212,34 @@ jobs:
         with:
           name: pcf-solution
           path: artifacts/MerchantCrmBridgeControls/bin/Release/*.zip
+
+  infra:
+    name: Bicep (build and lint)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: az bicep install
+      - run: az bicep build --file infra/main.bicep --stdout > /dev/null
+      - run: az bicep lint --file infra/main.bicep
+      - run: |
+          az bicep build-params --file infra/test.bicepparam --stdout > /dev/null
+          az bicep build-params --file infra/prod.bicepparam --stdout > /dev/null
+
+  image:
+    name: Container image and docker compose on Kafka
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: docker compose up --build --detach --wait --wait-timeout 300
+      - name: The demo world syncs over Kafka
+        run: |
+          for i in $(seq 1 60); do curl -sf http://localhost:8080/healthz && break; sleep 2; done
+          token=$(curl -sf -X POST http://localhost:8080/dev/token -H 'content-type: application/json' -d '{}' | python3 -c 'import sys,json; print(json.load(sys.stdin)["access_token"])')
+          for i in $(seq 1 60); do
+            live=$(curl -sf http://localhost:8080/v1/overview -H "authorization: Bearer $token" | python3 -c 'import sys,json; print(sum(s["count"] for s in json.load(sys.stdin)["stages"] if s["stage"]=="live"))')
+            echo "live merchants: $live"; [ "$live" -ge 3 ] && exit 0; sleep 3
+          done
+          docker compose logs bridge | tail -100; exit 1
+      - run: curl -sf http://localhost:8080/ | grep -q "<title>Merchant sync</title>"
+      - if: always()
+        run: docker compose down

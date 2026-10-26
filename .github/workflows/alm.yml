@@ -1,0 +1,94 @@
+name: alm
+
+# Dataverse ALM: apply the schema to the development environment, export the solution as managed and
+# unmanaged, and import the managed one downstream with that environment's deployment settings.
+# Runs when the environments are configured (repository variables and environment secrets).
+on:
+  push:
+    branches: [main]
+    paths: [dataverse/**, src/Bridge.Plugins/**, src/Bridge.Plugins.Logic/**, src/Bridge.Alm/**, alm/**]
+  workflow_dispatch:
+    inputs:
+      target:
+        description: Import into
+        type: choice
+        options: [test, prod]
+        default: test
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  check:
+    name: Plan and settings
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - run: dotnet run --project src/Bridge.Alm -- plan --out plan.json && diff plan.json alm/metadata-plan.json
+      - run: dotnet run --project src/Bridge.Alm -- settings --check alm/settings
+
+  dev:
+    name: Apply to development and export
+    needs: check
+    if: vars.DATAVERSE_DEV_URL != ''
+    runs-on: ubuntu-latest
+    environment: dataverse-dev
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - run: dotnet build src/Bridge.Plugins -c Release
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+      - name: Apply dataverse/model.json
+        run: |
+          export DATAVERSE_TOKEN=$(az account get-access-token --resource "${{ vars.DATAVERSE_DEV_URL }}" --query accessToken -o tsv)
+          dotnet run --project src/Bridge.Alm -- apply --url "${{ vars.DATAVERSE_DEV_URL }}" \
+            --plugins src/Bridge.Plugins/bin/Release/net462/MerchantCrmBridge.Plugins.dll
+      - run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+      - name: Export managed and unmanaged
+        run: |
+          pac auth create --url "${{ vars.DATAVERSE_DEV_URL }}" --applicationId "${{ vars.AZURE_CLIENT_ID }}" --clientSecret "${{ secrets.DATAVERSE_CLIENT_SECRET }}" --tenant "${{ vars.AZURE_TENANT_ID }}"
+          pac solution export --name MerchantCrmBridge --path out/MerchantCrmBridge.zip --overwrite
+          pac solution export --name MerchantCrmBridge --path out/MerchantCrmBridge_managed.zip --managed --overwrite
+          pac solution unpack --zipfile out/MerchantCrmBridge.zip --folder out/unpacked --packagetype Unmanaged
+      - uses: actions/upload-artifact@v5
+        with:
+          name: solution
+          path: out
+
+  import:
+    name: Import managed into ${{ inputs.target || 'test' }}
+    needs: dev
+    runs-on: ubuntu-latest
+    environment: dataverse-${{ inputs.target || 'test' }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - uses: actions/download-artifact@v5
+        with:
+          name: solution
+          path: out
+      - name: Deployment settings for this environment
+        env:
+          INTEGRATION_USER_ID: ${{ vars.INTEGRATION_USER_ID }}
+          BRIDGE_API_URL: ${{ vars.BRIDGE_API_URL }}
+          DATAVERSE_CONNECTION_ID: ${{ vars.DATAVERSE_CONNECTION_ID }}
+          OUTLOOK_CONNECTION_ID: ${{ vars.OUTLOOK_CONNECTION_ID }}
+        run: dotnet run --project src/Bridge.Alm -- settings --fill alm/settings/${{ inputs.target || 'test' }}.json --out out/settings.json
+      - run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool
+      - name: Import as managed, then assign the bridge its role
+        run: |
+          pac auth create --url "${{ vars.DATAVERSE_URL }}" --applicationId "${{ vars.AZURE_CLIENT_ID }}" --clientSecret "${{ secrets.DATAVERSE_CLIENT_SECRET }}" --tenant "${{ vars.AZURE_TENANT_ID }}"
+          pac solution import --path out/MerchantCrmBridge_managed.zip --settings-file out/settings.json --activate-plugins --force-overwrite --publish-changes
+          pac admin assign-user --environment "${{ vars.DATAVERSE_URL }}" --user "${{ vars.BRIDGE_MANAGED_IDENTITY_CLIENT_ID }}" --role "Merchant Bridge Integration" --application-user

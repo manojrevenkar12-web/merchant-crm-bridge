@@ -33,6 +33,8 @@ public sealed class PlatformEventsFunction(PlatformConsumer consumer, TimeProvid
         var message = TriggerDelivery.Message(value, context.BindingContext.BindingData, context.RetryContext?.RetryCount ?? 0, Topics.PlatformEvents);
         var invocation = new TriggerDelivery();
         var handled = await consumer.HandleAsync(invocation, message, context.CancellationToken);
+        if (handled.Handling == Handling.DeadLettered)
+            logger.LogError("dead-lettered {Topic}/{Partition}/{Offset} for {Merchant}: {Detail}", message.Topic, message.Partition, message.Offset, message.Key, handled.Detail);
         if (handled.Handling == Handling.RetryLater)
             logger.LogWarning("delivering {Topic}/{Partition}/{Offset} again (delivery {Delivery}): {Detail}",
                 message.Topic, message.Partition, message.Offset, message.DeliveryCount, handled.Detail);
