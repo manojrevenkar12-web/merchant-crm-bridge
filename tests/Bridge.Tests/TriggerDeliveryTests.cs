@@ -12,7 +12,7 @@ namespace Bridge.Tests;
 
 /// <summary>The consumer under the Functions Kafka trigger: the host retries an invocation that throws and
 /// checkpoints one that returns. These tests play the host.</summary>
-public class FunctionInvocationTests
+public class TriggerDeliveryTests
 {
     private readonly CancellationToken _ct = TestContext.Current.CancellationToken;
     private readonly FakeTimeProvider _clock = new(DateTimeOffset.Parse("2026-10-02T08:00:00Z", System.Globalization.CultureInfo.InvariantCulture));
@@ -32,12 +32,12 @@ public class FunctionInvocationTests
     {
         for (var retry = 0; retry < maxInvocations; retry++)
         {
-            var message = FunctionInvocation.Message(value, binding, retry, Topics.PlatformEvents);
-            var invocation = new FunctionInvocation();
+            var message = TriggerDelivery.Message(value, binding, retry, Topics.PlatformEvents);
+            var invocation = new TriggerDelivery();
             var handled = await consumer.HandleAsync(invocation, message, _ct);
             try
             {
-                await FunctionInvocation.RetryIfAskedAsync(handled, TimeSpan.Zero, _clock, _ct);
+                await TriggerDelivery.RetryIfAskedAsync(handled, TimeSpan.Zero, _clock, _ct);
                 Assert.True(invocation.Committed);
                 return retry + 1;
             }
@@ -52,7 +52,7 @@ public class FunctionInvocationTests
     [Fact]
     public void Binding_data_becomes_the_same_message_the_kafka_consumer_sees()
     {
-        var m = FunctionInvocation.Message("{}", Binding("M-000001", 3, 1234, new() { ["traceparent"] = "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01" }), retryCount: 2, Topics.PlatformEvents);
+        var m = TriggerDelivery.Message("{}", Binding("M-000001", 3, 1234, new() { ["traceparent"] = "00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01" }), retryCount: 2, Topics.PlatformEvents);
         Assert.Equal((Topics.PlatformEvents, 3, 1234L, "M-000001", 3), (m.Topic, m.Partition, m.Offset, m.Key, m.DeliveryCount));
         Assert.Equal("00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01", m.Headers["traceparent"]);
     }

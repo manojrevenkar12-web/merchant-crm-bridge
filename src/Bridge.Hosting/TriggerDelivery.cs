@@ -12,7 +12,7 @@ namespace Bridge.Hosting;
 /// again for the same message (holding the partition) when the invocation throws. So "commit" means
 /// "return normally" and "rewind" means "throw"; the delivery count is the retry count plus one.
 /// </summary>
-public sealed class FunctionInvocation : IEventConsumer
+public sealed class TriggerDelivery : IEventConsumer
 {
     public bool Committed { get; private set; }
     public bool RewindRequested { get; private set; }

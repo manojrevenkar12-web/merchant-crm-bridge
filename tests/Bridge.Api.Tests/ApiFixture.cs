@@ -14,7 +14,7 @@ namespace Bridge.Api.Tests;
 /// workers consuming. Waits until merchants have gone live so every view has data.</summary>
 public sealed class ApiFixture : IAsyncLifetime
 {
-    public WebApplicationFactory<BridgeSettings> Factory { get; } = new WebApplicationFactory<BridgeSettings>().WithWebHostBuilder(b =>
+    public WebApplicationFactory<OpsQueries> Factory { get; } = new WebApplicationFactory<OpsQueries>().WithWebHostBuilder(b =>
     {
         b.UseEnvironment("Development");
         b.UseSetting("Bridge:Demo", "true");

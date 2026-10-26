@@ -21,21 +21,24 @@ jobs:
     name: .NET build, unit, component, API contract tests and drills
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
       - run: dotnet restore merchant-crm-bridge.slnx
       - run: dotnet build merchant-crm-bridge.slnx --no-restore -c Release
       - name: Unit and component tests
-        run: dotnet test --project tests/Bridge.Tests --no-build -c Release
+        run: dotnet test --project tests/Bridge.Tests --no-build -c Release -- --report-xunit-trx
       - name: API tests (OpenAPI contract, roles, replay, GraphQL)
-        run: dotnet test --project tests/Bridge.Api.Tests --no-build -c Release
+        run: dotnet test --project tests/Bridge.Api.Tests --no-build -c Release -- --report-xunit-trx
       - name: Event-log contract (in-memory)
-        run: dotnet test --project tests/Bridge.Kafka.Tests --no-build -c Release
+        run: dotnet test --project tests/Bridge.Kafka.Tests --no-build -c Release -- --report-xunit-trx
       - name: Sync drills (quick)
         run: dotnet run --project src/Bridge.Drills --no-build -c Release -- --quick --out artifacts/drills
-      - uses: actions/upload-artifact@v4
+      - name: Annotate failed tests
+        if: failure()
+        run: python3 scripts/ci/annotate-trx.py
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: drills
@@ -51,29 +54,32 @@ jobs:
     env:
       KAFKA_BOOTSTRAP: localhost:9092
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
       - run: dotnet build tests/Bridge.Kafka.Tests -c Release && dotnet build src/Bridge.Drills -c Release
       - name: Wait for the broker
         run: for i in $(seq 1 60); do (echo > /dev/tcp/localhost/9092) 2>/dev/null && exit 0; sleep 1; done; exit 1
       - name: Event-log contract (Kafka)
-        run: dotnet test --project tests/Bridge.Kafka.Tests --no-build -c Release
+        run: dotnet test --project tests/Bridge.Kafka.Tests --no-build -c Release -- --report-xunit-trx
       - name: Sync drills on Kafka
         run: dotnet run --project src/Bridge.Drills --no-build -c Release -- --quick --kafka localhost:9092 --out artifacts/drills-kafka
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         if: always()
         with:
           name: drills-kafka
           path: artifacts/drills-kafka
+      - name: Annotate failed tests
+        if: failure()
+        run: python3 scripts/ci/annotate-trx.py
 
   plugins:
     name: Dataverse plug-in assembly (.NET Framework 4.6.2, strong-named)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
       - run: dotnet build src/Bridge.Plugins -c Release
@@ -99,7 +105,7 @@ jobs:
           print("CLR flags", hex(flags), "signature size", sig_size)
           sys.exit(0 if flags & 0x8 and sig_size > 0 else 1)
           PY
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: plugins
           path: src/Bridge.Plugins/bin/Release/net462/MerchantCrmBridge.Plugins.dll
@@ -108,8 +114,8 @@ jobs:
     name: Function App (isolated worker)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with:
           global-json-file: global.json
       - run: dotnet publish src/Bridge.Functions -c Release -o artifacts/functions
@@ -119,7 +125,7 @@ jobs:
           for f in platform-events outbox-relay reconciler; do grep -q "\"name\": *\"$f\"" artifacts/functions/functions.metadata || { echo "missing $f"; cat artifacts/functions/functions.metadata; exit 1; }; done
           grep -q kafkaTrigger artifacts/functions/functions.metadata
           grep -q exponentialBackoff artifacts/functions/functions.metadata
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: functions
           path: artifacts/functions
