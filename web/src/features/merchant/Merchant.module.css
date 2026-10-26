@@ -1,0 +1,339 @@
+.back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  color: var(--ink-muted);
+  text-decoration: none;
+  font-size: var(--text-sm);
+}
+
+.back:hover {
+  color: var(--ink);
+}
+
+.title {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.title h1 {
+  font-size: var(--text-2xl);
+  overflow-wrap: anywhere;
+}
+
+.titleMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--ink-muted);
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: var(--space-4) var(--space-5);
+  margin: 0 0 var(--space-6);
+}
+
+.facts div {
+  display: grid;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.facts dt {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: var(--weight-medium);
+  overflow-wrap: anywhere;
+}
+
+.section {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5) 0;
+  border-top: var(--hairline) solid var(--line);
+}
+
+.section h2 {
+  font-size: var(--text-lg);
+}
+
+.lead {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+  max-width: var(--measure);
+}
+
+/* The seam: CRM on the left, platform on the right, stitched where they agree. */
+.seam {
+  display: grid;
+  width: 100%;
+  max-width: 48rem;
+  grid-template-columns: minmax(0, 1fr) var(--space-7) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+.side {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-3);
+  min-width: 0;
+}
+
+.side strong {
+  overflow-wrap: anywhere;
+}
+
+.side small {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.left {
+  text-align: right;
+}
+
+.headCrm,
+.headPlatform {
+  padding: 0 var(--space-3) var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.headCrm {
+  color: var(--crm);
+  text-align: right;
+}
+
+.headPlatform {
+  color: var(--platform);
+}
+
+.aspect {
+  grid-column: 1 / -1;
+  padding-top: var(--space-2);
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+.rowCrm {
+  border-right: var(--seam-width) solid var(--crm);
+}
+
+.rowPlatform {
+  border-left: var(--seam-width) solid var(--platform);
+}
+
+.stitch {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.stitch svg {
+  width: 100%;
+  height: var(--space-6);
+  overflow: visible;
+}
+
+.thread {
+  stroke: var(--ink);
+  stroke-width: var(--rule);
+  stroke-dasharray: 4 3;
+  fill: none;
+}
+
+.knot {
+  fill: var(--ink);
+}
+
+.torn .thread {
+  stroke: var(--signal);
+}
+
+.tornMark {
+  fill: var(--signal);
+  font-size: var(--text-md);
+  font-weight: var(--weight-bold);
+}
+
+.why {
+  grid-column: 1 / -1;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-control);
+  background: var(--signal-wash);
+  color: var(--signal);
+  font-size: var(--text-sm);
+  text-align: center;
+}
+
+/* Two-sided timeline: what the CRM sent on the left, what the platform sent on the right. */
+.timeline {
+  position: relative;
+  display: grid;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  border-left: var(--seam-width) solid var(--platform);
+}
+
+.entry.out {
+  border-left-color: var(--crm);
+}
+
+.entryTop {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.entryTop strong {
+  font-weight: var(--weight-medium);
+}
+
+.entry small {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+  overflow-wrap: anywhere;
+}
+
+.status {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.applied,
+.sent {
+  color: var(--ok);
+}
+
+.stale,
+.pending {
+  color: var(--wait);
+}
+
+.rejected {
+  color: var(--signal);
+}
+
+.timelineHead {
+  display: none;
+}
+
+@media (min-width: 56rem) {
+  .timeline {
+    grid-template-columns: 1fr var(--space-8) 1fr;
+    gap: var(--space-2) 0;
+  }
+
+  .timeline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    border-left: var(--hairline) solid var(--line-strong);
+  }
+
+  .timelineHead {
+    display: contents;
+  }
+
+  .timelineHead span {
+    font-size: var(--text-sm);
+    font-weight: var(--weight-medium);
+    padding-bottom: var(--space-2);
+  }
+
+  .timelineHead span:first-child {
+    color: var(--crm);
+    text-align: right;
+    padding-right: var(--space-4);
+  }
+
+  .timelineHead span:last-child {
+    color: var(--platform);
+    grid-column: 3;
+    padding-left: var(--space-4);
+  }
+
+  .entryRow {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+
+  .entry {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .entry.out {
+    grid-column: 1;
+    border-left: 0;
+    border-right: var(--seam-width) solid var(--crm);
+    text-align: right;
+  }
+
+  .entry.out .entryTop {
+    flex-direction: row-reverse;
+  }
+
+  .when {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    z-index: 1;
+    justify-self: center;
+    padding: var(--space-1) var(--space-2);
+    border-radius: var(--radius-pill);
+    background: var(--paper);
+    font-size: var(--text-xs);
+    color: var(--ink-muted);
+  }
+}
+
+.whenInline {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+@media (min-width: 56rem) {
+  .whenInline {
+    display: none;
+  }
+}
+
+.whenCol {
+  display: none;
+}
+
+@media (min-width: 56rem) {
+  .whenCol {
+    display: block;
+  }
+}
+
+.more {
+  justify-self: start;
+  margin-top: var(--space-3);
+}

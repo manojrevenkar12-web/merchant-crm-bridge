@@ -1,0 +1,286 @@
+.verdict {
+  display: grid;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+}
+
+.verdict h1 {
+  font-size: var(--text-3xl);
+  max-width: 22ch;
+}
+
+.verdict p {
+  color: var(--ink-muted);
+  max-width: var(--measure);
+}
+
+.calm h1 {
+  color: var(--ink);
+}
+
+.attention h1 {
+  color: var(--signal);
+}
+
+.section {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-5) 0;
+  border-top: var(--hairline) solid var(--line);
+}
+
+.section h2 {
+  font-size: var(--text-lg);
+}
+
+.sectionLead {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+/* Pipeline: two lanes of stations joined by lines that carry the direction of the events. */
+.lanes {
+  display: grid;
+  gap: var(--space-5);
+}
+
+.lane {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.laneTitle {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+}
+
+.laneTitle span {
+  color: var(--ink-muted);
+  font-weight: var(--weight-regular);
+}
+
+.stations {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.station {
+  position: relative;
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3) var(--space-4);
+  border: var(--hairline) solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--surface);
+  text-decoration: none;
+  min-width: 0;
+}
+
+a.station:hover {
+  border-color: var(--line-strong);
+}
+
+.station strong {
+  font-size: var(--text-xl);
+  line-height: var(--leading-tight);
+}
+
+.station .topic {
+  font-size: var(--text-md);
+  font-weight: var(--weight-medium);
+  overflow-wrap: anywhere;
+}
+
+.station small {
+  color: var(--ink-muted);
+  font-size: var(--text-sm);
+}
+
+.crmEnd {
+  border-color: var(--crm);
+  box-shadow: inset var(--seam-width) 0 0 var(--crm);
+}
+
+.platformEnd {
+  border-color: var(--platform);
+  box-shadow: inset var(--seam-width) 0 0 var(--platform);
+}
+
+.waiting strong {
+  color: var(--wait);
+}
+
+.problem {
+  border-color: var(--signal);
+}
+
+.problem strong {
+  color: var(--signal);
+}
+
+.connector {
+  display: none;
+}
+
+@media (min-width: 48rem) {
+  .stations {
+    grid-template-columns: 1fr var(--space-6) 1fr var(--space-6) 1fr var(--space-6) 1fr;
+    align-items: stretch;
+  }
+
+  .connector {
+    display: block;
+    align-self: center;
+    width: 100%;
+    height: var(--space-4);
+    overflow: visible;
+  }
+}
+
+.connector path {
+  fill: none;
+  stroke: var(--ink-faint);
+  stroke-width: var(--rule);
+}
+
+.connector .head {
+  fill: var(--ink-faint);
+  stroke: none;
+}
+
+/* Stage bar */
+.stageBar {
+  display: flex;
+  width: 100%;
+  height: var(--space-5);
+  border-radius: var(--radius-control);
+  overflow: hidden;
+  background: var(--surface-sunk);
+}
+
+.segment {
+  height: 100%;
+  min-width: var(--hairline);
+}
+
+.segment + .segment {
+  border-left: var(--rule) solid var(--paper);
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: var(--space-2) var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--text-sm);
+}
+
+.legend li {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.legend a {
+  text-decoration: none;
+}
+
+.legend a:hover {
+  text-decoration: underline;
+}
+
+.swatch {
+  width: var(--space-3);
+  height: var(--space-3);
+  border-radius: var(--radius-control);
+  flex: none;
+}
+
+.legend b {
+  margin-left: auto;
+  font-weight: var(--weight-medium);
+}
+
+.tone-quiet {
+  background: var(--ink-faint);
+}
+
+.tone-moving {
+  background: var(--wait);
+}
+
+.tone-working {
+  background: var(--ok);
+}
+
+.tone-stopped {
+  background: var(--signal);
+}
+
+/* Throughput */
+.throughput {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.applied {
+  fill: var(--crm);
+}
+
+.stale {
+  fill: var(--ink-faint);
+}
+
+.rejected {
+  fill: var(--signal);
+}
+
+.baseline {
+  stroke: var(--line-strong);
+  stroke-width: var(--hairline);
+}
+
+.keys {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--ink-muted);
+}
+
+.keys span {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.two {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 64rem) {
+  .two {
+    grid-template-columns: 3fr 2fr;
+  }
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+
+.facts dt {
+  color: var(--ink-muted);
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: var(--weight-medium);
+}

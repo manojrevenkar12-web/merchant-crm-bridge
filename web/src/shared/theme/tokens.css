@@ -1,0 +1,125 @@
+/*
+ * Design tokens. Two sides of one merchant: the CRM (teal) and the payments platform (violet). The
+ * seam between them is ink when they agree and signal red where they do not. Amber means waiting.
+ * Components use these variables only; numbers live here.
+ */
+:root {
+  --paper: #f2f4f3;
+  --surface: #ffffff;
+  --surface-sunk: #e9edeb;
+  --ink: #1b2430;
+  --ink-muted: #5b6672;
+  --ink-faint: #8a949c;
+  --line: #d5dbd8;
+  --line-strong: #b4bdb9;
+  --crm: #0e6e6b;
+  --crm-wash: #dcefed;
+  --platform: #6a3fa0;
+  --platform-wash: #ece4f6;
+  --signal: #c8322b;
+  --signal-wash: #fbe4e2;
+  --wait: #9a6412;
+  --wait-wash: #f8ecd6;
+  --ok: #2f7d4f;
+  --ok-wash: #dff0e5;
+  --focus: #1f5fd1;
+
+  --font-sans: "Atkinson Hyperlegible Next Variable", "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  --font-id: "Atkinson Hyperlegible Mono", ui-monospace, monospace;
+
+  /* Type scale: 1.25 from 16px. */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5625rem;
+  --text-2xl: 1.953rem;
+  --text-3xl: 2.441rem;
+  --leading-tight: 1.15;
+  --leading-body: 1.5;
+  --weight-regular: 400;
+  --weight-medium: 560;
+  --weight-bold: 720;
+
+  /* Space: a 4px grid. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  --radius-control: 6px;
+  --radius-panel: 10px;
+  --radius-pill: 999px;
+  --hairline: 1px;
+  --rule: 2px;
+  --seam-width: 3px;
+
+  --rail-width: 15rem;
+  --content-max: 76rem;
+  --measure: 68ch;
+  --touch: 2.75rem;
+  --gutter: var(--space-4);
+
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --shadow-pop: 0 8px 24px rgb(27 36 48 / 0.14);
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --gutter: var(--space-6);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0f1417;
+    --surface: #161d21;
+    --surface-sunk: #11181b;
+    --ink: #e6ecea;
+    --ink-muted: #a1aeb4;
+    --ink-faint: #6f7d84;
+    --line: #2a3439;
+    --line-strong: #3b484e;
+    --crm: #3fb8b2;
+    --crm-wash: #11302f;
+    --platform: #a98be0;
+    --platform-wash: #261d36;
+    --signal: #f06a5f;
+    --signal-wash: #3a1916;
+    --wait: #e0a93b;
+    --wait-wash: #33260f;
+    --ok: #5cc184;
+    --ok-wash: #142c1e;
+    --focus: #7aa7ff;
+    --shadow-pop: 0 8px 24px rgb(0 0 0 / 0.5);
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper: #0f1417;
+  --surface: #161d21;
+  --surface-sunk: #11181b;
+  --ink: #e6ecea;
+  --ink-muted: #a1aeb4;
+  --ink-faint: #6f7d84;
+  --line: #2a3439;
+  --line-strong: #3b484e;
+  --crm: #3fb8b2;
+  --crm-wash: #11302f;
+  --platform: #a98be0;
+  --platform-wash: #261d36;
+  --signal: #f06a5f;
+  --signal-wash: #3a1916;
+  --wait: #e0a93b;
+  --wait-wash: #33260f;
+  --ok: #5cc184;
+  --ok-wash: #142c1e;
+  --focus: #7aa7ff;
+  --shadow-pop: 0 8px 24px rgb(0 0 0 / 0.5);
+}

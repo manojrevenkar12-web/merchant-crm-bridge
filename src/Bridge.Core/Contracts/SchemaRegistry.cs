@@ -43,7 +43,8 @@ public sealed class SchemaRegistry
         if (result.IsValid) return;
         var errors = (result.Details ?? [])
             .Where(d => d.Errors is { Count: > 0 })
-            .SelectMany(d => d.Errors!.Select(e => $"{d.InstanceLocation}: {e.Value}"))
+            .SelectMany(d => d.Errors!.Select(e => $"{(d.InstanceLocation.ToString() is { Length: > 0 } at ? at : "data")}: {e.Value}"))
+            .Where(m => !m.Contains("did not match the required schema", StringComparison.Ordinal))
             .Take(5)
             .ToList();
         throw new ContractException($"{type} v{version} does not match its schema: " + (errors.Count > 0 ? string.Join("; ", errors) : "invalid"));

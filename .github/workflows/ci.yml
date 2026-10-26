@@ -129,3 +129,59 @@ jobs:
         with:
           name: functions
           path: artifacts/functions
+
+  web:
+    name: Operations console (types, lint, format, unit tests, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+      - run: npm run check
+      - run: npm run build
+      - uses: actions/upload-artifact@v5
+        with:
+          name: console
+          path: web/dist
+
+  e2e:
+    name: End-to-end (Playwright, desktop and phone) on the demo world
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - name: Build the console into the API
+        working-directory: web
+        run: npm ci && npm run build && cp -r dist/* ../src/Bridge.Api/wwwroot/
+      - run: dotnet build src/Bridge.Api -c Release
+      - name: Start the API in demo mode
+        run: |
+          cd src/Bridge.Api
+          ASPNETCORE_ENVIRONMENT=Development ASPNETCORE_URLS=http://127.0.0.1:5080 nohup dotnet bin/Release/net10.0/Bridge.Api.dll > ../../api.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:5080/healthz && break; sleep 1; done
+          sleep 20 # let sales onboard a few merchants and the platform take them live
+      - run: npx playwright install --with-deps chromium
+        working-directory: web
+      - run: npx playwright test
+        working-directory: web
+      - uses: actions/upload-artifact@v5
+        if: failure()
+        with:
+          name: e2e-report
+          path: |
+            web/playwright-report
+            api.log
