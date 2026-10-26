@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.example/merchant-crm-bridge/platform.merchant.status_changed.v1.json",
+  "title": "platform.merchant.status_changed v1",
+  "description": "The merchant's processing status on the platform changed.",
+  "type": "object",
+  "properties": {
+    "merchantId": {
+      "type": "string",
+      "pattern": "^M-[0-9]{6}$"
+    },
+    "status": {
+      "enum": [
+        "live",
+        "restricted",
+        "terminated"
+      ]
+    },
+    "reason": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    }
+  },
+  "required": [
+    "merchantId",
+    "status"
+  ],
+  "additionalProperties": true
+}

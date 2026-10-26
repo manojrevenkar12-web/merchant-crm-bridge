@@ -1,0 +1,22 @@
+{
+  "specversion": "1.0",
+  "source": "payments-platform/merchant-service",
+  "subject": "M-004211",
+  "time": "2026-10-01T08:15:00Z",
+  "datacontenttype": "application/json",
+  "id": "0b6f6a1e-1d2c-4a8e-9f00-000000000004",
+  "type": "platform.merchant.volume_reported",
+  "sequence": 7,
+  "schemaversion": 2,
+  "dataschema": "contracts/schemas/platform.merchant.volume_reported.v2.json",
+  "data": {
+    "merchantId": "M-004211",
+    "month": "2026-09",
+    "gross": {
+      "amountMinor": 2210450,
+      "currency": "EUR"
+    },
+    "transactions": 1048,
+    "refundsMinor": 38900
+  }
+}

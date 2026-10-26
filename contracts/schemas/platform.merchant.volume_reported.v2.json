@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.example/merchant-crm-bridge/platform.merchant.volume_reported.v2.json",
+  "title": "platform.merchant.volume_reported v2",
+  "description": "Monthly processed volume with currency and refunds.",
+  "type": "object",
+  "properties": {
+    "merchantId": {
+      "type": "string",
+      "pattern": "^M-[0-9]{6}$"
+    },
+    "month": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-(0[1-9]|1[0-2])$"
+    },
+    "gross": {
+      "type": "object",
+      "properties": {
+        "amountMinor": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        }
+      },
+      "required": [
+        "amountMinor",
+        "currency"
+      ]
+    },
+    "transactions": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "refundsMinor": {
+      "type": "integer",
+      "minimum": 0
+    }
+  },
+  "required": [
+    "merchantId",
+    "month",
+    "gross",
+    "transactions"
+  ],
+  "additionalProperties": true
+}

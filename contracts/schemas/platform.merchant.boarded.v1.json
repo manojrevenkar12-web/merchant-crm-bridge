@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.example/merchant-crm-bridge/platform.merchant.boarded.v1.json",
+  "title": "platform.merchant.boarded v1",
+  "description": "The merchant has an account on the payment platform.",
+  "type": "object",
+  "properties": {
+    "merchantId": {
+      "type": "string",
+      "pattern": "^M-[0-9]{6}$"
+    },
+    "platformAccountId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40
+    }
+  },
+  "required": [
+    "merchantId",
+    "platformAccountId"
+  ],
+  "additionalProperties": true
+}

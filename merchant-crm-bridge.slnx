@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Bridge.Plugins.Logic/Bridge.Plugins.Logic.csproj" />
+    <Project Path="src/Bridge.Core/Bridge.Core.csproj" />
+    <Project Path="src/Bridge.Dataverse/Bridge.Dataverse.csproj" />
+    <Project Path="src/Bridge.Emulator/Bridge.Emulator.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Bridge.Tests/Bridge.Tests.csproj" />
+  </Folder>
+</Solution>

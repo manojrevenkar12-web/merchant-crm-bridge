@@ -1,0 +1,16 @@
+{
+  "specversion": "1.0",
+  "source": "payments-platform/merchant-service",
+  "subject": "M-004211",
+  "time": "2026-10-01T08:15:00Z",
+  "datacontenttype": "application/json",
+  "id": "0b6f6a1e-1d2c-4a8e-9f00-000000000006",
+  "type": "platform.merchant.status_changed",
+  "sequence": 9,
+  "schemaversion": 1,
+  "dataschema": "contracts/schemas/platform.merchant.status_changed.v1.json",
+  "data": {
+    "merchantId": "M-004211",
+    "status": "live"
+  }
+}

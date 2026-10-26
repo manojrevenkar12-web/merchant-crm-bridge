@@ -1,0 +1,110 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.example/merchant-crm-bridge/platform.merchant.snapshot.v1.json",
+  "title": "platform.merchant.snapshot v1",
+  "description": "The platform's current view of a merchant, used by the reconciler to heal drift.",
+  "type": "object",
+  "properties": {
+    "merchantId": {
+      "type": "string",
+      "pattern": "^M-[0-9]{6}$"
+    },
+    "platformAccountId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "kyc": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "decision": {
+          "enum": [
+            "approved",
+            "rejected",
+            "more_information"
+          ]
+        },
+        "reasonCode": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "decision",
+        "version"
+      ]
+    },
+    "status": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "live",
+            "restricted",
+            "terminated"
+          ]
+        },
+        "reason": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "status",
+        "version"
+      ]
+    },
+    "risk": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "chargebackRatio": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "riskBand": {
+          "enum": [
+            "low",
+            "medium",
+            "high"
+          ]
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "chargebackRatio",
+        "riskBand",
+        "version"
+      ]
+    }
+  },
+  "required": [
+    "merchantId"
+  ],
+  "additionalProperties": true
+}

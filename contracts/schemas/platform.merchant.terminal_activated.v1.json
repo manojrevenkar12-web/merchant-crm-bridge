@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.example/merchant-crm-bridge/platform.merchant.terminal_activated.v1.json",
+  "title": "platform.merchant.terminal_activated v1",
+  "description": "A point-of-sale terminal was activated for the merchant.",
+  "type": "object",
+  "properties": {
+    "merchantId": {
+      "type": "string",
+      "pattern": "^M-[0-9]{6}$"
+    },
+    "terminalId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 40
+    },
+    "model": {
+      "type": "string",
+      "maxLength": 60
+    },
+    "activatedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "merchantId",
+    "terminalId",
+    "activatedAt"
+  ],
+  "additionalProperties": true
+}

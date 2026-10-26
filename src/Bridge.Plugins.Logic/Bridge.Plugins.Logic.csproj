@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Plug-in rules without the Dataverse SDK. The same files are compiled into the .NET Framework 4.6.2
+       plug-in assembly (src/Bridge.Plugins) and run by the emulator and the tests, so the rules that run
+       inside Dataverse's transaction are the rules that are tested. Keep this code to what net462 has. -->
+  <PropertyGroup>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <RootNamespace>MerchantCrmBridge.Plugins.Logic</RootNamespace>
+    <!-- Suggestions for span and char overloads that .NET Framework 4.6.2 does not have. -->
+    <NoWarn>$(NoWarn);CA1845;CA1846;CA1847;CA1865;CA1866;CA1867;CA1510;CA1512;CA1513;CA1862;CA1864</NoWarn>
+  </PropertyGroup>
+</Project>

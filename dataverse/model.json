@@ -1,0 +1,834 @@
+{
+  "$comment": "The Dataverse model this bridge needs: one file feeds the solution generator, the emulator and the ownership tests. Publisher prefix mcb.",
+  "publisher": {
+    "uniqueName": "merchantcrmbridge",
+    "displayName": "Merchant CRM Bridge",
+    "prefix": "mcb",
+    "optionValuePrefix": 77100
+  },
+  "solution": {
+    "uniqueName": "MerchantCrmBridge",
+    "displayName": "Merchant CRM Bridge",
+    "version": "1.4.0.0"
+  },
+  "choices": {
+    "mcb_lifecyclestage": {
+      "displayName": "Lifecycle stage",
+      "options": [
+        {
+          "value": 771000000,
+          "name": "prospect",
+          "label": "Prospect"
+        },
+        {
+          "value": 771000001,
+          "name": "onboarding",
+          "label": "Onboarding requested"
+        },
+        {
+          "value": 771000002,
+          "name": "kyc_pending",
+          "label": "KYC: information needed"
+        },
+        {
+          "value": 771000003,
+          "name": "approved",
+          "label": "Approved"
+        },
+        {
+          "value": 771000004,
+          "name": "rejected",
+          "label": "Rejected"
+        },
+        {
+          "value": 771000005,
+          "name": "boarded",
+          "label": "Boarded"
+        },
+        {
+          "value": 771000006,
+          "name": "live",
+          "label": "Live"
+        },
+        {
+          "value": 771000007,
+          "name": "restricted",
+          "label": "Restricted"
+        },
+        {
+          "value": 771000008,
+          "name": "terminated",
+          "label": "Terminated"
+        }
+      ]
+    },
+    "mcb_legalform": {
+      "displayName": "Legal form",
+      "options": [
+        {
+          "value": 771000100,
+          "name": "gmbh",
+          "label": "GmbH"
+        },
+        {
+          "value": 771000101,
+          "name": "ug",
+          "label": "UG (haftungsbeschränkt)"
+        },
+        {
+          "value": 771000102,
+          "name": "ag",
+          "label": "AG"
+        },
+        {
+          "value": 771000103,
+          "name": "ek",
+          "label": "e.K."
+        },
+        {
+          "value": 771000104,
+          "name": "gbr",
+          "label": "GbR"
+        },
+        {
+          "value": 771000105,
+          "name": "sole_trader",
+          "label": "Sole trader"
+        },
+        {
+          "value": 771000106,
+          "name": "other",
+          "label": "Other"
+        }
+      ]
+    },
+    "mcb_pricingplan": {
+      "displayName": "Pricing plan",
+      "options": [
+        {
+          "value": 771000200,
+          "name": "starter",
+          "label": "Starter"
+        },
+        {
+          "value": 771000201,
+          "name": "growth",
+          "label": "Growth"
+        },
+        {
+          "value": 771000202,
+          "name": "enterprise",
+          "label": "Enterprise (individual)"
+        }
+      ]
+    },
+    "mcb_kycdecision": {
+      "displayName": "KYC decision",
+      "options": [
+        {
+          "value": 771000300,
+          "name": "approved",
+          "label": "Approved"
+        },
+        {
+          "value": 771000301,
+          "name": "rejected",
+          "label": "Rejected"
+        },
+        {
+          "value": 771000302,
+          "name": "more_information",
+          "label": "More information needed"
+        }
+      ]
+    },
+    "mcb_riskband": {
+      "displayName": "Risk band",
+      "options": [
+        {
+          "value": 771000400,
+          "name": "low",
+          "label": "Low"
+        },
+        {
+          "value": 771000401,
+          "name": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": 771000402,
+          "name": "high",
+          "label": "High"
+        }
+      ]
+    },
+    "mcb_outboxstatus": {
+      "displayName": "Outbox status",
+      "options": [
+        {
+          "value": 771000500,
+          "name": "pending",
+          "label": "Pending"
+        },
+        {
+          "value": 771000501,
+          "name": "sent",
+          "label": "Sent"
+        }
+      ]
+    },
+    "mcb_inboundoutcome": {
+      "displayName": "Inbound outcome",
+      "options": [
+        {
+          "value": 771000600,
+          "name": "applied",
+          "label": "Applied"
+        },
+        {
+          "value": 771000601,
+          "name": "stale",
+          "label": "Stale (newer state already applied)"
+        },
+        {
+          "value": 771000602,
+          "name": "rejected",
+          "label": "Rejected by a rule"
+        }
+      ]
+    },
+    "mcb_driftresolution": {
+      "displayName": "Drift resolution",
+      "options": [
+        {
+          "value": 771000700,
+          "name": "healed",
+          "label": "Healed from the platform"
+        },
+        {
+          "value": 771000701,
+          "name": "needs_review",
+          "label": "Needs review"
+        }
+      ]
+    },
+    "mcb_platformstatus": {
+      "displayName": "Platform status",
+      "options": [
+        {
+          "value": 771000800,
+          "name": "live",
+          "label": "Live"
+        },
+        {
+          "value": 771000801,
+          "name": "restricted",
+          "label": "Restricted"
+        },
+        {
+          "value": 771000802,
+          "name": "terminated",
+          "label": "Terminated"
+        }
+      ]
+    }
+  },
+  "tables": [
+    {
+      "logicalName": "account",
+      "entitySet": "accounts",
+      "primaryId": "accountid",
+      "primaryName": "name",
+      "standard": true,
+      "displayName": "Account",
+      "keys": [
+        {
+          "name": "mcb_merchantid_key",
+          "attributes": [
+            "mcb_merchantid"
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "name",
+          "type": "string",
+          "maxLength": 160,
+          "standard": true,
+          "owner": "crm",
+          "event": "legalName"
+        },
+        {
+          "name": "emailaddress1",
+          "type": "string",
+          "maxLength": 100,
+          "standard": true,
+          "owner": "crm",
+          "event": "contactEmail"
+        },
+        {
+          "name": "mcb_merchantid",
+          "type": "string",
+          "maxLength": 20,
+          "displayName": "Merchant ID",
+          "owner": "key"
+        },
+        {
+          "name": "mcb_lifecyclestage",
+          "type": "choice",
+          "choice": "mcb_lifecyclestage",
+          "displayName": "Lifecycle stage",
+          "owner": "shared"
+        },
+        {
+          "name": "mcb_legalform",
+          "type": "choice",
+          "choice": "mcb_legalform",
+          "displayName": "Legal form",
+          "owner": "crm",
+          "event": "legalForm"
+        },
+        {
+          "name": "mcb_country",
+          "type": "string",
+          "maxLength": 2,
+          "displayName": "Country (ISO)",
+          "owner": "crm",
+          "event": "country"
+        },
+        {
+          "name": "mcb_iban",
+          "type": "string",
+          "maxLength": 34,
+          "displayName": "Settlement IBAN",
+          "owner": "crm",
+          "event": "iban"
+        },
+        {
+          "name": "mcb_mcc",
+          "type": "string",
+          "maxLength": 4,
+          "displayName": "Merchant category code",
+          "owner": "crm",
+          "event": "mcc"
+        },
+        {
+          "name": "mcb_pricingplan",
+          "type": "choice",
+          "choice": "mcb_pricingplan",
+          "displayName": "Pricing plan",
+          "owner": "crm",
+          "event": "pricingPlan"
+        },
+        {
+          "name": "mcb_crmversion",
+          "type": "bigint",
+          "displayName": "CRM version",
+          "owner": "crm-system"
+        },
+        {
+          "name": "mcb_platformaccountid",
+          "type": "string",
+          "maxLength": 40,
+          "displayName": "Platform account",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_kycdecision",
+          "type": "choice",
+          "choice": "mcb_kycdecision",
+          "displayName": "KYC decision",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_kycreason",
+          "type": "string",
+          "maxLength": 200,
+          "displayName": "KYC reason",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_volumemonth",
+          "type": "string",
+          "maxLength": 7,
+          "displayName": "Volume month",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_lastmonthvolume",
+          "type": "decimal",
+          "precision": 2,
+          "displayName": "Volume last reported month (EUR)",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_lastmonthtransactions",
+          "type": "int",
+          "displayName": "Transactions last reported month",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_volumeversion",
+          "type": "bigint",
+          "displayName": "Volume version applied",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_chargebackratio",
+          "type": "decimal",
+          "precision": 4,
+          "displayName": "Chargeback ratio",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_riskband",
+          "type": "choice",
+          "choice": "mcb_riskband",
+          "displayName": "Risk band",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_platformstatus",
+          "type": "choice",
+          "choice": "mcb_platformstatus",
+          "displayName": "Platform status",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_kycversion",
+          "type": "bigint",
+          "displayName": "KYC version applied",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_statusversion",
+          "type": "bigint",
+          "displayName": "Status version applied",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_riskversion",
+          "type": "bigint",
+          "displayName": "Risk version applied",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_statusreason",
+          "type": "string",
+          "maxLength": 200,
+          "displayName": "Platform status reason",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_platformversion",
+          "type": "bigint",
+          "displayName": "Highest platform sequence seen",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_lastsyncedon",
+          "type": "datetime",
+          "displayName": "Last synced",
+          "owner": "platform"
+        }
+      ]
+    },
+    {
+      "logicalName": "mcb_terminal",
+      "entitySet": "mcb_terminals",
+      "primaryId": "mcb_terminalid",
+      "primaryName": "mcb_name",
+      "displayName": "Terminal",
+      "keys": [
+        {
+          "name": "mcb_terminalkey",
+          "attributes": [
+            "mcb_terminalref"
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "mcb_name",
+          "type": "string",
+          "maxLength": 100,
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_terminalref",
+          "type": "string",
+          "maxLength": 40,
+          "displayName": "Terminal ID",
+          "owner": "key"
+        },
+        {
+          "name": "mcb_merchantid",
+          "type": "string",
+          "maxLength": 20,
+          "displayName": "Merchant ID",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_model",
+          "type": "string",
+          "maxLength": 60,
+          "displayName": "Model",
+          "owner": "platform"
+        },
+        {
+          "name": "mcb_activatedon",
+          "type": "datetime",
+          "displayName": "Activated on",
+          "owner": "platform"
+        }
+      ]
+    },
+    {
+      "logicalName": "mcb_outboxmessage",
+      "entitySet": "mcb_outboxmessages",
+      "primaryId": "mcb_outboxmessageid",
+      "primaryName": "mcb_name",
+      "displayName": "Outbox message",
+      "keys": [
+        {
+          "name": "mcb_outboxeventkey",
+          "attributes": [
+            "mcb_eventid"
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "mcb_name",
+          "type": "string",
+          "maxLength": 200,
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_eventid",
+          "type": "string",
+          "maxLength": 36,
+          "displayName": "Event ID",
+          "owner": "key"
+        },
+        {
+          "name": "mcb_eventtype",
+          "type": "string",
+          "maxLength": 100,
+          "displayName": "Event type",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_merchantid",
+          "type": "string",
+          "maxLength": 20,
+          "displayName": "Merchant ID",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_sequence",
+          "type": "bigint",
+          "displayName": "Sequence",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_schemaversion",
+          "type": "int",
+          "displayName": "Schema version",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_payload",
+          "type": "memo",
+          "maxLength": 100000,
+          "displayName": "Payload (JSON)",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_status",
+          "type": "choice",
+          "choice": "mcb_outboxstatus",
+          "displayName": "Status",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_attempts",
+          "type": "int",
+          "displayName": "Publish attempts",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_lasterror",
+          "type": "string",
+          "maxLength": 400,
+          "displayName": "Last error",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_publishedon",
+          "type": "datetime",
+          "displayName": "Published on",
+          "owner": "bridge"
+        }
+      ]
+    },
+    {
+      "logicalName": "mcb_inboundevent",
+      "entitySet": "mcb_inboundevents",
+      "primaryId": "mcb_inboundeventid",
+      "primaryName": "mcb_name",
+      "displayName": "Inbound event",
+      "keys": [
+        {
+          "name": "mcb_inboundeventkey",
+          "attributes": [
+            "mcb_eventid"
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "mcb_name",
+          "type": "string",
+          "maxLength": 200,
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_eventid",
+          "type": "string",
+          "maxLength": 36,
+          "displayName": "Event ID",
+          "owner": "key"
+        },
+        {
+          "name": "mcb_eventtype",
+          "type": "string",
+          "maxLength": 100,
+          "displayName": "Event type",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_merchantid",
+          "type": "string",
+          "maxLength": 20,
+          "displayName": "Merchant ID",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_sequence",
+          "type": "bigint",
+          "displayName": "Sequence",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_outcome",
+          "type": "choice",
+          "choice": "mcb_inboundoutcome",
+          "displayName": "Outcome",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_detail",
+          "type": "string",
+          "maxLength": 400,
+          "displayName": "Detail",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_processedon",
+          "type": "datetime",
+          "displayName": "Processed on",
+          "owner": "bridge"
+        }
+      ]
+    },
+    {
+      "logicalName": "mcb_driftfinding",
+      "entitySet": "mcb_driftfindings",
+      "primaryId": "mcb_driftfindingid",
+      "primaryName": "mcb_name",
+      "displayName": "Drift finding",
+      "keys": [],
+      "columns": [
+        {
+          "name": "mcb_name",
+          "type": "string",
+          "maxLength": 200,
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_merchantid",
+          "type": "string",
+          "maxLength": 20,
+          "displayName": "Merchant ID",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_field",
+          "type": "string",
+          "maxLength": 100,
+          "displayName": "Column",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_crmvalue",
+          "type": "string",
+          "maxLength": 200,
+          "displayName": "Value in CRM",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_platformvalue",
+          "type": "string",
+          "maxLength": 200,
+          "displayName": "Value on the platform",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_resolution",
+          "type": "choice",
+          "choice": "mcb_driftresolution",
+          "displayName": "Resolution",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_detectedon",
+          "type": "datetime",
+          "displayName": "Detected on",
+          "owner": "bridge"
+        }
+      ]
+    },
+    {
+      "logicalName": "mcb_bridgelease",
+      "entitySet": "mcb_bridgeleases",
+      "primaryId": "mcb_bridgeleaseid",
+      "primaryName": "mcb_name",
+      "displayName": "Bridge lease",
+      "keys": [
+        {
+          "name": "mcb_leasekey",
+          "attributes": [
+            "mcb_name"
+          ]
+        }
+      ],
+      "columns": [
+        {
+          "name": "mcb_name",
+          "type": "string",
+          "maxLength": 100,
+          "owner": "key"
+        },
+        {
+          "name": "mcb_holder",
+          "type": "string",
+          "maxLength": 100,
+          "displayName": "Holder",
+          "owner": "bridge"
+        },
+        {
+          "name": "mcb_expireson",
+          "type": "datetime",
+          "displayName": "Expires on",
+          "owner": "bridge"
+        }
+      ]
+    }
+  ],
+  "customApis": [
+    {
+      "uniqueName": "mcb_RequestOnboarding",
+      "displayName": "Request onboarding",
+      "boundEntity": "account",
+      "isFunction": false,
+      "plugin": "MerchantCrmBridge.Plugins.RequestOnboardingPlugin",
+      "responseProperties": [
+        {
+          "uniqueName": "EventId",
+          "type": "string"
+        }
+      ]
+    }
+  ],
+  "pluginSteps": [
+    {
+      "plugin": "MerchantCrmBridge.Plugins.ValidateMerchantPlugin",
+      "message": "Create",
+      "entity": "account",
+      "stage": "PreValidation",
+      "mode": "Synchronous",
+      "rank": 1
+    },
+    {
+      "plugin": "MerchantCrmBridge.Plugins.ValidateMerchantPlugin",
+      "message": "Update",
+      "entity": "account",
+      "stage": "PreValidation",
+      "mode": "Synchronous",
+      "rank": 1,
+      "filteringAttributes": [
+        "mcb_iban",
+        "mcb_mcc",
+        "mcb_country",
+        "mcb_merchantid"
+      ]
+    },
+    {
+      "plugin": "MerchantCrmBridge.Plugins.MerchantOutboxPlugin",
+      "message": "Update",
+      "entity": "account",
+      "stage": "PreOperation",
+      "mode": "Synchronous",
+      "rank": 10,
+      "filteringAttributes": [
+        "name",
+        "emailaddress1",
+        "mcb_legalform",
+        "mcb_country",
+        "mcb_iban",
+        "mcb_mcc",
+        "mcb_pricingplan"
+      ],
+      "preImage": [
+        "mcb_merchantid",
+        "mcb_lifecyclestage",
+        "mcb_crmversion",
+        "name",
+        "emailaddress1",
+        "mcb_legalform",
+        "mcb_country",
+        "mcb_iban",
+        "mcb_mcc",
+        "mcb_pricingplan"
+      ]
+    }
+  ],
+  "environmentVariables": [
+    {
+      "schemaName": "mcb_IntegrationUserId",
+      "displayName": "Integration user (application user) id",
+      "type": "String",
+      "defaultValue": ""
+    },
+    {
+      "schemaName": "mcb_BridgeApiUrl",
+      "displayName": "Bridge API base URL",
+      "type": "String",
+      "defaultValue": "https://api.example.invalid/merchant-bridge"
+    },
+    {
+      "schemaName": "mcb_HighRiskNotify",
+      "displayName": "Notify account owner when a merchant turns high risk",
+      "type": "Boolean",
+      "defaultValue": "true"
+    }
+  ],
+  "connectionReferences": [
+    {
+      "logicalName": "mcb_OfficeOutlook",
+      "displayName": "Merchant CRM Bridge: Outlook",
+      "connectorId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+    }
+  ]
+}

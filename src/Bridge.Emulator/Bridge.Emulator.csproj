@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <!-- A Dataverse Web API emulator: the subset this bridge uses, with Dataverse's rules for alternate keys,
+       upsert, optimistic concurrency, $batch changesets, service protection (429) and the plug-in
+       pipeline running the bridge's real plug-in logic. Lets every test and drill run without a tenant. -->
+  <PropertyGroup>
+    <RootNamespace>Bridge.Emulator</RootNamespace>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\dataverse\model.json" LogicalName="model.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bridge.Plugins.Logic\Bridge.Plugins.Logic.csproj" />
+  </ItemGroup>
+</Project>

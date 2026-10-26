@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The Dataverse Web API over HttpClient: OData queries, alternate keys, upsert with If-Match /
+       If-None-Match, $batch changesets, service-protection handling and Entra ID tokens. -->
+  <PropertyGroup>
+    <RootNamespace>Bridge.Dataverse</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bridge.Core\Bridge.Core.csproj" />
+  </ItemGroup>
+</Project>

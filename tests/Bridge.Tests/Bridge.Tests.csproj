@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Unit and component tests: plug-in rules, the event mapper, contracts, the in-memory log, the
+       Dataverse client against the emulator, the gateway, the applier, relay, consumer and reconciler. -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Bridge.Core\Bridge.Core.csproj" />
+    <ProjectReference Include="..\..\src\Bridge.Dataverse\Bridge.Dataverse.csproj" />
+    <ProjectReference Include="..\..\src\Bridge.Emulator\Bridge.Emulator.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\dataverse\model.json" Link="model.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\contracts\examples\**\*.json" LinkBase="examples" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

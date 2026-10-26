@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.example/merchant-crm-bridge/platform.merchant.kyc_decided.v1.json",
+  "title": "platform.merchant.kyc_decided v1",
+  "description": "The platform's KYC/KYB decision on a merchant.",
+  "type": "object",
+  "properties": {
+    "merchantId": {
+      "type": "string",
+      "pattern": "^M-[0-9]{6}$"
+    },
+    "decision": {
+      "enum": [
+        "approved",
+        "rejected",
+        "more_information"
+      ]
+    },
+    "reasonCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 200
+    }
+  },
+  "required": [
+    "merchantId",
+    "decision"
+  ],
+  "additionalProperties": true
+}

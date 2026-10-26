@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.example/merchant-crm-bridge/crm.merchant.details_changed.v1.json",
+  "title": "crm.merchant.details_changed v1",
+  "description": "CRM-owned details of a known merchant changed. Emitted from the Dataverse outbox.",
+  "type": "object",
+  "properties": {
+    "merchantId": {
+      "type": "string",
+      "pattern": "^M-[0-9]{6}$"
+    },
+    "changes": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "enum": [
+          "legalName",
+          "contactEmail",
+          "legalForm",
+          "country",
+          "iban",
+          "mcc",
+          "pricingPlan"
+        ]
+      },
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "merchantId",
+    "changes"
+  ],
+  "additionalProperties": true
+}

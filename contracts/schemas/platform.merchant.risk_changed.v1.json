@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.example/merchant-crm-bridge/platform.merchant.risk_changed.v1.json",
+  "title": "platform.merchant.risk_changed v1",
+  "description": "The merchant's risk assessment changed.",
+  "type": "object",
+  "properties": {
+    "merchantId": {
+      "type": "string",
+      "pattern": "^M-[0-9]{6}$"
+    },
+    "chargebackRatio": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1
+    },
+    "riskBand": {
+      "enum": [
+        "low",
+        "medium",
+        "high"
+      ]
+    }
+  },
+  "required": [
+    "merchantId",
+    "chargebackRatio",
+    "riskBand"
+  ],
+  "additionalProperties": true
+}
