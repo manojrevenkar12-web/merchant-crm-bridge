@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Client for the payment platform's GraphQL merchant API (used by the reconciler). -->
+  <PropertyGroup>
+    <RootNamespace>Bridge.Platform</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bridge.Core\Bridge.Core.csproj" />
+    <ProjectReference Include="..\Bridge.Dataverse\Bridge.Dataverse.csproj" />
+  </ItemGroup>
+</Project>

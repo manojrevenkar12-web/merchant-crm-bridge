@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Sync drills: the whole bridge against the Dataverse emulator and the platform simulator, with
+       chaos, checked against invariants. The release gate. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Bridge.Drills</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bridge.Core\Bridge.Core.csproj" />
+    <ProjectReference Include="..\Bridge.Dataverse\Bridge.Dataverse.csproj" />
+    <ProjectReference Include="..\Bridge.Emulator\Bridge.Emulator.csproj" />
+    <ProjectReference Include="..\Bridge.PlatformSim\Bridge.PlatformSim.csproj" />
+    <ProjectReference Include="..\Bridge.Platform\Bridge.Platform.csproj" />
+    <ProjectReference Include="..\Bridge.Kafka\Bridge.Kafka.csproj" />
+  </ItemGroup>
+</Project>

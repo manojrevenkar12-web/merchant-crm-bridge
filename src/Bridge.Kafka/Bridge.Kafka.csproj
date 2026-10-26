@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- IEventLog on Apache Kafka with the Confluent client: idempotent producer with acks=all, manual
+       offset commits after each applied message, cooperative-sticky rebalancing. -->
+  <PropertyGroup>
+    <RootNamespace>Bridge.Kafka</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Confluent.Kafka" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bridge.Core\Bridge.Core.csproj" />
+  </ItemGroup>
+</Project>

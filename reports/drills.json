@@ -1,0 +1,243 @@
+{
+  "generatedAt": "2026-10-26T14:13:15.7006689+00:00",
+  "transport": "in-memory log (Kafka delivery semantics)",
+  "passed": true,
+  "drills": [
+    {
+      "name": "steady",
+      "description": "No faults: the baseline every other drill is compared with.",
+      "passed": true,
+      "checks": [
+        {
+          "name": "Events alone converge (before reconciling)",
+          "passed": true,
+          "detail": "every difference explained by a lost event (0)"
+        },
+        {
+          "name": "CRM matches the platform",
+          "passed": true,
+          "detail": "40 merchants, every platform-owned column equal"
+        },
+        {
+          "name": "Terminals once each",
+          "passed": true,
+          "detail": "25 in CRM, 25 on the platform"
+        },
+        {
+          "name": "Each event recorded once",
+          "passed": true,
+          "detail": "299 published, 299 ledger rows (incl. reconciler snapshots), 0 missing"
+        },
+        {
+          "name": "Dead letters are exactly the broken messages",
+          "passed": true,
+          "detail": "0 broken, 0 dead-lettered ()"
+        },
+        {
+          "name": "CRM changes reached the platform",
+          "passed": true,
+          "detail": "40 onboardings and 11 edits delivered, outbox empty"
+        },
+        {
+          "name": "No echo of the bridge\u0027s own writes",
+          "passed": true,
+          "detail": "40 onboardings, 11 detail changes for 11 edits by people"
+        }
+      ],
+      "numbers": {
+        "merchants": 40,
+        "platform_events_published": 299,
+        "duplicated_by_platform": 0,
+        "reordered_by_platform": 0,
+        "dropped_by_platform": 0,
+        "broken_messages": 0,
+        "sales_edits": 11,
+        "consumer_crashes": 0,
+        "concurrency_retries": 3,
+        "throttled_responses": 0,
+        "throttled_waits": 0,
+        "dataverse_requests": 1153,
+        "healed_by_reconciler": 0,
+        "needs_review": 0
+      },
+      "seconds": 7.1
+    },
+    {
+      "name": "platform-chaos",
+      "description": "The platform duplicates 15 % of events, reorders 15 %, loses 3 % of state events, sends 30 % of volume reports in the old schema and a broken message now and then.",
+      "passed": true,
+      "checks": [
+        {
+          "name": "Events alone converge (before reconciling)",
+          "passed": true,
+          "detail": "every difference explained by a lost event (8)"
+        },
+        {
+          "name": "CRM matches the platform",
+          "passed": true,
+          "detail": "60 merchants, every platform-owned column equal"
+        },
+        {
+          "name": "Terminals once each",
+          "passed": true,
+          "detail": "59 in CRM, 59 on the platform"
+        },
+        {
+          "name": "Each event recorded once",
+          "passed": true,
+          "detail": "453 published, 459 ledger rows (incl. reconciler snapshots), 0 missing"
+        },
+        {
+          "name": "Dead letters are exactly the broken messages",
+          "passed": true,
+          "detail": "2 broken, 2 dead-lettered (contract)"
+        },
+        {
+          "name": "CRM changes reached the platform",
+          "passed": true,
+          "detail": "60 onboardings and 14 edits delivered, outbox empty"
+        },
+        {
+          "name": "No echo of the bridge\u0027s own writes",
+          "passed": true,
+          "detail": "60 onboardings, 12 detail changes for 14 edits by people"
+        }
+      ],
+      "numbers": {
+        "merchants": 60,
+        "platform_events_published": 515,
+        "duplicated_by_platform": 60,
+        "reordered_by_platform": 44,
+        "dropped_by_platform": 8,
+        "broken_messages": 2,
+        "sales_edits": 14,
+        "consumer_crashes": 0,
+        "concurrency_retries": 0,
+        "throttled_responses": 0,
+        "throttled_waits": 0,
+        "dataverse_requests": 1762,
+        "healed_by_reconciler": 7,
+        "needs_review": 0
+      },
+      "seconds": 5
+    },
+    {
+      "name": "crashes-and-contention",
+      "description": "Consumers crash between the CRM write and the offset commit (5 %), three consumers rebalance, people edit the same rows, Dataverse answers slowly (up to 25 ms) and fails $batch requests with 503 now and then.",
+      "passed": true,
+      "checks": [
+        {
+          "name": "Events alone converge (before reconciling)",
+          "passed": true,
+          "detail": "every difference explained by a lost event (0)"
+        },
+        {
+          "name": "CRM matches the platform",
+          "passed": true,
+          "detail": "50 merchants, every platform-owned column equal"
+        },
+        {
+          "name": "Terminals once each",
+          "passed": true,
+          "detail": "53 in CRM, 53 on the platform"
+        },
+        {
+          "name": "Each event recorded once",
+          "passed": true,
+          "detail": "394 published, 394 ledger rows (incl. reconciler snapshots), 0 missing"
+        },
+        {
+          "name": "Dead letters are exactly the broken messages",
+          "passed": true,
+          "detail": "0 broken, 0 dead-lettered ()"
+        },
+        {
+          "name": "CRM changes reached the platform",
+          "passed": true,
+          "detail": "50 onboardings and 33 edits delivered, outbox empty"
+        },
+        {
+          "name": "No echo of the bridge\u0027s own writes",
+          "passed": true,
+          "detail": "50 onboardings, 30 detail changes for 33 edits by people"
+        }
+      ],
+      "numbers": {
+        "merchants": 50,
+        "platform_events_published": 409,
+        "duplicated_by_platform": 15,
+        "reordered_by_platform": 16,
+        "dropped_by_platform": 0,
+        "broken_messages": 0,
+        "sales_edits": 33,
+        "consumer_crashes": 27,
+        "concurrency_retries": 6,
+        "throttled_responses": 0,
+        "throttled_waits": 0,
+        "dataverse_requests": 1737,
+        "healed_by_reconciler": 0,
+        "needs_review": 0
+      },
+      "seconds": 13.8
+    },
+    {
+      "name": "throttling",
+      "description": "Dataverse service protection set tight (150 requests per 3 s for the bridge\u0027s user): 429 with Retry-After all through the run.",
+      "passed": true,
+      "checks": [
+        {
+          "name": "Events alone converge (before reconciling)",
+          "passed": true,
+          "detail": "every difference explained by a lost event (0)"
+        },
+        {
+          "name": "CRM matches the platform",
+          "passed": true,
+          "detail": "30 merchants, every platform-owned column equal"
+        },
+        {
+          "name": "Terminals once each",
+          "passed": true,
+          "detail": "32 in CRM, 32 on the platform"
+        },
+        {
+          "name": "Each event recorded once",
+          "passed": true,
+          "detail": "225 published, 225 ledger rows (incl. reconciler snapshots), 0 missing"
+        },
+        {
+          "name": "Dead letters are exactly the broken messages",
+          "passed": true,
+          "detail": "0 broken, 0 dead-lettered ()"
+        },
+        {
+          "name": "CRM changes reached the platform",
+          "passed": true,
+          "detail": "30 onboardings and 9 edits delivered, outbox empty"
+        },
+        {
+          "name": "No echo of the bridge\u0027s own writes",
+          "passed": true,
+          "detail": "30 onboardings, 9 detail changes for 9 edits by people"
+        }
+      ],
+      "numbers": {
+        "merchants": 30,
+        "platform_events_published": 240,
+        "duplicated_by_platform": 15,
+        "reordered_by_platform": 8,
+        "dropped_by_platform": 0,
+        "broken_messages": 0,
+        "sales_edits": 9,
+        "consumer_crashes": 0,
+        "concurrency_retries": 0,
+        "throttled_responses": 118,
+        "throttled_waits": 12,
+        "dataverse_requests": 923,
+        "healed_by_reconciler": 0,
+        "needs_review": 0
+      },
+      "seconds": 22.9
+    }
+  ]
+}

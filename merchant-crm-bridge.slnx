@@ -4,6 +4,10 @@
     <Project Path="src/Bridge.Core/Bridge.Core.csproj" />
     <Project Path="src/Bridge.Dataverse/Bridge.Dataverse.csproj" />
     <Project Path="src/Bridge.Emulator/Bridge.Emulator.csproj" />
+    <Project Path="src/Bridge.Kafka/Bridge.Kafka.csproj" />
+    <Project Path="src/Bridge.Platform/Bridge.Platform.csproj" />
+    <Project Path="src/Bridge.PlatformSim/Bridge.PlatformSim.csproj" />
+    <Project Path="src/Bridge.Drills/Bridge.Drills.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Bridge.Tests/Bridge.Tests.csproj" />

@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <!-- The other side: a payment platform that onboards merchants the CRM sends, runs KYC, boards them,
+       activates terminals, reports volume and risk, and misbehaves on purpose (duplicates, reordering,
+       lost events, broken messages, old schema versions). Serves its merchant view over GraphQL. -->
+  <PropertyGroup>
+    <RootNamespace>Bridge.PlatformSim</RootNamespace>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="HotChocolate.AspNetCore" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bridge.Core\Bridge.Core.csproj" />
+    <ProjectReference Include="..\Bridge.Kafka\Bridge.Kafka.csproj" />
+  </ItemGroup>
+</Project>
