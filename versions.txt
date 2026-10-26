@@ -1,0 +1,164 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+Project 'lib' has the following package references
+   [net10.0]: 
+   Top-level Package                                    Requested   Resolved
+   > Azure.Identity                                     1.21.0      1.21.0  
+   > Confluent.Kafka                                    2.16.0      2.16.0  
+   > coverlet.collector                                 10.1.0      10.1.0  
+   > HotChocolate.AspNetCore                            16.7.1      16.7.1  
+   > HotChocolate.Data                                  16.7.1      16.7.1  
+   > JsonSchema.Net                                     9.5.0       9.5.0   
+   > Microsoft.AspNetCore.Authentication.JwtBearer      10.0.14     10.0.14 
+   > Microsoft.AspNetCore.Mvc.Testing                   10.0.14     10.0.14 
+   > Microsoft.Extensions.TimeProvider.Testing          10.11.0     10.11.0 
+   > Microsoft.NET.Test.Sdk                             18.11.0     18.11.0 
+   > Testcontainers.Kafka                               4.16.0      4.16.0  
+   > xunit.runner.visualstudio                          4.0.1       4.0.1   
+   > xunit.v3                                           4.0.2       4.0.2   
+
+   Transitive Package                                             Resolved
+   > Azure.Core                                                   1.53.0  
+   > BouncyCastle.Cryptography                                    2.7.0   
+   > ChilliCream.Nitro.App                                        32.0.2  
+   > Docker.DotNet.Enhanced                                       4.3.3   
+   > Docker.DotNet.Enhanced.Handler.Abstractions                  4.3.3   
+   > Docker.DotNet.Enhanced.LegacyHttp                            4.3.3   
+   > Docker.DotNet.Enhanced.NativeHttp                            4.3.3   
+   > Docker.DotNet.Enhanced.NPipe                                 4.3.3   
+   > Docker.DotNet.Enhanced.Unix                                  4.3.3   
+   > Docker.DotNet.Enhanced.X509                                  4.3.3   
+   > GreenDonut                                                   16.7.1  
+   > GreenDonut.Abstractions                                      16.7.1  
+   > GreenDonut.Data                                              16.7.1  
+   > GreenDonut.Data.Abstractions                                 16.7.1  
+   > GreenDonut.Data.Primitives                                   16.7.1  
+   > HotChocolate                                                 16.7.1  
+   > HotChocolate.Abstractions                                    16.7.1  
+   > HotChocolate.AspNetCore.Pipeline                             16.7.1  
+   > HotChocolate.Authorization                                   16.7.1  
+   > HotChocolate.Caching.Memory                                  16.7.1  
+   > HotChocolate.CostAnalysis                                    16.7.1  
+   > HotChocolate.CostAnalysis.Core                               16.7.1  
+   > HotChocolate.Execution.Abstractions                          16.7.1  
+   > HotChocolate.Execution.Configuration.Abstractions            16.7.1  
+   > HotChocolate.Execution.Operation.Abstractions                16.7.1  
+   > HotChocolate.Execution.Pipeline                              16.7.1  
+   > HotChocolate.Execution.Projections                           16.7.1  
+   > HotChocolate.Features                                        16.7.1  
+   > HotChocolate.Fusion.Language                                 16.7.1  
+   > HotChocolate.Fusion.Utilities                                16.7.1  
+   > HotChocolate.Language                                        16.7.1  
+   > HotChocolate.Language.SyntaxTree                             16.7.1  
+   > HotChocolate.Language.Utf8                                   16.7.1  
+   > HotChocolate.Language.Utf8.SyntaxTree                        16.7.1  
+   > HotChocolate.Language.Visitors                               16.7.1  
+   > HotChocolate.Language.Web                                    16.7.1  
+   > HotChocolate.PersistedOperations.Abstractions                16.7.1  
+   > HotChocolate.PersistedOperations.Pipeline                    16.7.1  
+   > HotChocolate.Primitives                                      16.7.1  
+   > HotChocolate.Subscriptions                                   16.7.1  
+   > HotChocolate.Subscriptions.InMemory                          16.7.1  
+   > HotChocolate.Text.Json                                       16.7.1  
+   > HotChocolate.Transport.Formatters                            16.7.1  
+   > HotChocolate.Transport.Sockets                               16.7.1  
+   > HotChocolate.Types                                           16.7.1  
+   > HotChocolate.Types.Abstractions                              16.7.1  
+   > HotChocolate.Types.CursorPagination                          16.7.1  
+   > HotChocolate.Types.CursorPagination.Extensions               16.7.1  
+   > HotChocolate.Types.Errors                                    16.7.1  
+   > HotChocolate.Types.Mutations                                 16.7.1  
+   > HotChocolate.Types.Queries                                   16.7.1  
+   > HotChocolate.Types.Scalars.Upload                            16.7.1  
+   > HotChocolate.Utilities                                       16.7.1  
+   > HotChocolate.Utilities.Base36                                16.7.1  
+   > HotChocolate.Utilities.Buffers                               16.7.1  
+   > HotChocolate.Utilities.DependencyInjection                   16.7.1  
+   > HotChocolate.Utilities.Tasks                                 16.7.1  
+   > HotChocolate.Validation                                      16.7.1  
+   > Humanizer.Core                                               3.0.10  
+   > Json.More.Net                                                3.0.1   
+   > JsonPointer.Net                                              7.0.3   
+   > librdkafka.redist                                            2.16.0  
+   > Microsoft.ApplicationInsights                                2.23.0  
+   > Microsoft.AspNetCore.TestHost                                10.0.14 
+   > Microsoft.Bcl.AsyncInterfaces                                10.0.3  
+   > Microsoft.Bcl.Cryptography                                   10.0.2  
+   > Microsoft.CodeCoverage                                       18.11.0 
+   > Microsoft.Extensions.Configuration                           10.0.14 
+   > Microsoft.Extensions.Configuration.Abstractions              10.0.14 
+   > Microsoft.Extensions.Configuration.Binder                    10.0.14 
+   > Microsoft.Extensions.Configuration.CommandLine               10.0.14 
+   > Microsoft.Extensions.Configuration.EnvironmentVariables      10.0.14 
+   > Microsoft.Extensions.Configuration.FileExtensions            10.0.14 
+   > Microsoft.Extensions.Configuration.Json                      10.0.14 
+   > Microsoft.Extensions.Configuration.UserSecrets               10.0.14 
+   > Microsoft.Extensions.DependencyInjection                     10.0.14 
+   > Microsoft.Extensions.DependencyInjection.Abstractions        10.0.14 
+   > Microsoft.Extensions.DependencyModel                         10.0.14 
+   > Microsoft.Extensions.Diagnostics                             10.0.14 
+   > Microsoft.Extensions.Diagnostics.Abstractions                10.0.14 
+   > Microsoft.Extensions.FileProviders.Abstractions              10.0.14 
+   > Microsoft.Extensions.FileProviders.Physical                  10.0.14 
+   > Microsoft.Extensions.FileSystemGlobbing                      10.0.14 
+   > Microsoft.Extensions.Hosting                                 10.0.14 
+   > Microsoft.Extensions.Hosting.Abstractions                    10.0.14 
+   > Microsoft.Extensions.Logging                                 10.0.14 
+   > Microsoft.Extensions.Logging.Abstractions                    10.0.14 
+   > Microsoft.Extensions.Logging.Configuration                   10.0.14 
+   > Microsoft.Extensions.Logging.Console                         10.0.14 
+   > Microsoft.Extensions.Logging.Debug                           10.0.14 
+   > Microsoft.Extensions.Logging.EventLog                        10.0.14 
+   > Microsoft.Extensions.Logging.EventSource                     10.0.14 
+   > Microsoft.Extensions.ObjectPool                              10.0.0  
+   > Microsoft.Extensions.Options                                 10.0.14 
+   > Microsoft.Extensions.Options.ConfigurationExtensions         10.0.14 
+   > Microsoft.Extensions.Primitives                              10.0.14 
+   > Microsoft.Identity.Client                                    4.83.1  
+   > Microsoft.Identity.Client.Extensions.Msal                    4.83.1  
+   > Microsoft.IdentityModel.Abstractions                         8.19.2  
+   > Microsoft.IdentityModel.JsonWebTokens                        8.19.2  
+   > Microsoft.IdentityModel.Logging                              8.19.2  
+   > Microsoft.IdentityModel.Protocols                            8.19.2  
+   > Microsoft.IdentityModel.Protocols.OpenIdConnect              8.19.2  
+   > Microsoft.IdentityModel.Tokens                               8.19.2  
+   > Microsoft.Testing.Extensions.Telemetry                       2.5.1   
+   > Microsoft.Testing.Extensions.TrxReport.Abstractions          2.5.1   
+   > Microsoft.Testing.Platform                                   2.5.1   
+   > Microsoft.Testing.Platform.MSBuild                           2.5.1   
+   > Microsoft.TestPlatform.ObjectModel                           18.11.0 
+   > Microsoft.TestPlatform.TestHost                              18.11.0 
+   > Microsoft.Win32.Registry                                     5.0.0   
+   > SharpZipLib                                                  1.4.2   
+   > SSH.NET                                                      2026.0.0
+   > System.ClientModel                                           1.10.0  
+   > System.Diagnostics.EventLog                                  10.0.14 
+   > System.IdentityModel.Tokens.Jwt                              8.19.2  
+   > System.IO.Hashing                                            8.0.0   
+   > System.Memory.Data                                           10.0.3  
+   > System.Security.AccessControl                                6.0.1   
+   > System.Security.Cryptography.ProtectedData                   4.5.0   
+   > Testcontainers                                               4.16.0  
+   > xunit.analyzers                                              2.2.0   
+   > xunit.v3.assert                                              4.0.2   
+   > xunit.v3.common                                              4.0.2   
+   > xunit.v3.core.mtp-v2                                         4.0.2   
+   > xunit.v3.extensibility.core                                  4.0.2   
+   > xunit.v3.mtp-v2                                              4.0.2   
+   > xunit.v3.runner.common                                       4.0.2   
+   > xunit.v3.runner.inproc.console                               4.0.2   
+   > Yarp.ReverseProxy                                            2.3.0   
+
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+Project 'fn' has the following package references
+   [net10.0]: 
+   Top-level Package                                                  Requested   Resolved
+   > Microsoft.ApplicationInsights.WorkerService                      3.2.0       3.2.0   
+   > Microsoft.Azure.Functions.Worker                                 2.52.0      2.52.0  
+   > Microsoft.Azure.Functions.Worker.ApplicationInsights             2.51.0      2.51.0  
+   > Microsoft.Azure.Functions.Worker.Extensions.Http.AspNetCore      2.1.1       2.1.1   
+   > Microsoft.Azure.Functions.Worker.Extensions.Kafka                4.3.3       4.3.3   
+   > Microsoft.Azure.Functions.Worker.Extensions.Timer                4.3.1       4.3.1   
+   > Microsoft.Azure.Functions.Worker.Sdk                             2.1.0       2.1.0   
+
