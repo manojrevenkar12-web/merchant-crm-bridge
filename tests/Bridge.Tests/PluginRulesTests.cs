@@ -62,6 +62,16 @@ public class PluginRulesTests
     }
 
     [Fact]
+    public void A_version_sent_by_the_caller_is_ignored()
+    {
+        var sink = new Sink();
+        var target = new Rec { [Model.PricingPlan] = 771000202, [Model.CrmVersion] = 1000L };
+        var entry = MerchantOutboxLogic.Execute(target, Account(Model.Stage.Live), As(Sales), sink);
+        Assert.Equal(5L, entry!.Sequence);
+        Assert.Equal(5L, target[Model.CrmVersion]);
+    }
+
+    [Fact]
     public void Writes_by_the_bridge_are_not_echoed_back()
     {
         var sink = new Sink();

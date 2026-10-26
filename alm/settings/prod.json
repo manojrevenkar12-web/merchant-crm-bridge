@@ -1,0 +1,11 @@
+{
+  "EnvironmentVariables": [
+    { "SchemaName": "mcb_IntegrationUserId", "Value": "#{INTEGRATION_USER_ID}#" },
+    { "SchemaName": "mcb_BridgeApiUrl", "Value": "#{BRIDGE_API_URL}#" },
+    { "SchemaName": "mcb_HighRiskNotify", "Value": "true" }
+  ],
+  "ConnectionReferences": [
+    { "LogicalName": "mcb_Dataverse", "ConnectionId": "#{DATAVERSE_CONNECTION_ID}#", "ConnectorId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps" },
+    { "LogicalName": "mcb_OfficeOutlook", "ConnectionId": "#{OUTLOOK_CONNECTION_ID}#", "ConnectorId": "/providers/Microsoft.PowerApps/apis/shared_office365" }
+  ]
+}

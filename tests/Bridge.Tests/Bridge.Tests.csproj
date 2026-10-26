@@ -10,6 +10,7 @@
     <ProjectReference Include="..\..\src\Bridge.Dataverse\Bridge.Dataverse.csproj" />
     <ProjectReference Include="..\..\src\Bridge.Emulator\Bridge.Emulator.csproj" />
     <ProjectReference Include="..\..\src\Bridge.Hosting\Bridge.Hosting.csproj" />
+    <ProjectReference Include="..\..\src\Bridge.Alm\Bridge.Alm.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\dataverse\model.json" Link="model.json" CopyToOutputDirectory="PreserveNewest" />

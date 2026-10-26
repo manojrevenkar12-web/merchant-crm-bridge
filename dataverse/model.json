@@ -1,5 +1,5 @@
 {
-  "$comment": "The Dataverse model this bridge needs: one file feeds the solution generator, the emulator and the ownership tests. Publisher prefix mcb.",
+  "$comment": "The Dataverse model this bridge needs: one file feeds the metadata deployment (src/Bridge.Alm), the emulator, the plug-in registration and the ownership tests. Publisher prefix mcb.",
   "publisher": {
     "uniqueName": "merchantcrmbridge",
     "displayName": "Merchant CRM Bridge",
@@ -481,7 +481,8 @@
           "displayName": "Activated on",
           "owner": "platform"
         }
-      ]
+      ],
+      "ownership": "OrganizationOwned"
     },
     {
       "logicalName": "mcb_outboxmessage",
@@ -570,7 +571,8 @@
           "displayName": "Published on",
           "owner": "bridge"
         }
-      ]
+      ],
+      "ownership": "OrganizationOwned"
     },
     {
       "logicalName": "mcb_inboundevent",
@@ -640,7 +642,8 @@
           "displayName": "Processed on",
           "owner": "bridge"
         }
-      ]
+      ],
+      "ownership": "OrganizationOwned"
     },
     {
       "logicalName": "mcb_driftfinding",
@@ -697,7 +700,8 @@
           "displayName": "Detected on",
           "owner": "bridge"
         }
-      ]
+      ],
+      "ownership": "OrganizationOwned"
     },
     {
       "logicalName": "mcb_bridgelease",
@@ -733,7 +737,8 @@
           "displayName": "Expires on",
           "owner": "bridge"
         }
-      ]
+      ],
+      "ownership": "OrganizationOwned"
     }
   ],
   "customApis": [
@@ -826,9 +831,136 @@
   ],
   "connectionReferences": [
     {
+      "logicalName": "mcb_Dataverse",
+      "displayName": "Merchant CRM Bridge: Dataverse",
+      "connectorId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+    },
+    {
       "logicalName": "mcb_OfficeOutlook",
       "displayName": "Merchant CRM Bridge: Outlook",
       "connectorId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+    }
+  ],
+  "securityRoles": [
+    {
+      "name": "Merchant Bridge Integration",
+      "description": "The bridge's application user: writes platform-owned columns and its own tables.",
+      "privileges": {
+        "account": [
+          "Read",
+          "Write"
+        ],
+        "mcb_terminal": [
+          "Create",
+          "Read",
+          "Write"
+        ],
+        "mcb_outboxmessage": [
+          "Read",
+          "Write"
+        ],
+        "mcb_inboundevent": [
+          "Create",
+          "Read",
+          "Write"
+        ],
+        "mcb_driftfinding": [
+          "Create",
+          "Read",
+          "Write"
+        ],
+        "mcb_bridgelease": [
+          "Create",
+          "Read",
+          "Write"
+        ]
+      }
+    },
+    {
+      "name": "Merchant Bridge Sales",
+      "description": "Sales and onboarding: merchants, their terminals and the sync status.",
+      "privileges": {
+        "mcb_terminal": [
+          "Read"
+        ],
+        "mcb_driftfinding": [
+          "Read"
+        ],
+        "mcb_outboxmessage": [
+          "Read"
+        ],
+        "mcb_inboundevent": [
+          "Read"
+        ]
+      }
+    }
+  ],
+  "fieldSecurityProfiles": [
+    {
+      "name": "Merchant Bridge Integration",
+      "description": "Platform-owned columns: written only by the bridge.",
+      "owners": [
+        "platform"
+      ],
+      "read": true,
+      "update": true,
+      "create": true
+    },
+    {
+      "name": "Merchant Bridge Readers",
+      "description": "Everyone who works with merchants reads the platform-owned columns.",
+      "owners": [
+        "platform"
+      ],
+      "read": true,
+      "update": false,
+      "create": false
+    }
+  ],
+  "app": {
+    "uniqueName": "mcb_MerchantOnboarding",
+    "displayName": "Merchant Onboarding",
+    "description": "Sales and onboarding: merchants from prospect to live, with the platform's view beside the CRM's.",
+    "areas": [
+      {
+        "title": "Merchants",
+        "groups": [
+          {
+            "title": "Merchants",
+            "tables": [
+              "account",
+              "mcb_terminal"
+            ]
+          }
+        ]
+      },
+      {
+        "title": "Sync",
+        "groups": [
+          {
+            "title": "Bridge",
+            "tables": [
+              "mcb_driftfinding",
+              "mcb_outboxmessage",
+              "mcb_inboundevent"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "flows": [
+    {
+      "name": "Notify the owner when a merchant turns high risk",
+      "uniqueName": "mcb_HighRiskNotify",
+      "definition": "flows/HighRiskNotify.json"
+    }
+  ],
+  "pcfControls": [
+    {
+      "name": "mcb_MerchantCrmBridge.MerchantSyncStatus",
+      "boundTo": "account.mcb_lifecyclestage",
+      "source": "pcf/MerchantSyncStatus"
     }
   ]
 }

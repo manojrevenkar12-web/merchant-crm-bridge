@@ -31,7 +31,9 @@ public static class MerchantOutboxLogic
         }
         if (changes.Count == 0) return null;
 
-        var sequence = row.GetLong(Model.CrmVersion) + 1;
+        // The version comes from the stored row, never from the request: a caller cannot move the sequence.
+        var stored = preImage?.Get(Model.CrmVersion);
+        var sequence = (stored is long l ? l : stored is int i ? i : 0) + 1;
         target.Set(Model.CrmVersion, sequence);
         var entry = new OutboxEntry(
             context.NewId().ToString(),

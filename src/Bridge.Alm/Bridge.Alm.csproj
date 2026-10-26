@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Schema as code for Dynamics 365: applies dataverse/model.json to an environment through the Dataverse
+       Web API (tables, columns, keys, choices, column security, roles, environment variables, connection
+       references, plug-in registration, the custom API, the model-driven app and the cloud flow), inside the
+       solution, idempotently. The pipeline then exports that solution as managed and imports it downstream
+       with a deployment settings file per environment. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>Bridge.Alm</RootNamespace>
+    <AssemblyName>mcb-alm</AssemblyName>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\dataverse\**\*.json" LinkBase="dataverse" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

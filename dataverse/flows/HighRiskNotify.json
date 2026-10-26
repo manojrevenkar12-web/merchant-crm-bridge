@@ -1,0 +1,95 @@
+{
+  "properties": {
+    "connectionReferences": {
+      "shared_commondataserviceforapps": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "mcb_Dataverse" },
+        "api": { "name": "shared_commondataserviceforapps" }
+      },
+      "shared_office365": {
+        "runtimeSource": "embedded",
+        "connection": { "connectionReferenceLogicalName": "mcb_OfficeOutlook" },
+        "api": { "name": "shared_office365" }
+      }
+    },
+    "definition": {
+      "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+      "contentVersion": "1.0.0.0",
+      "parameters": {
+        "$connections": { "defaultValue": {}, "type": "Object" },
+        "$authentication": { "defaultValue": {}, "type": "SecureObject" },
+        "Notify on high risk (mcb_HighRiskNotify)": {
+          "defaultValue": true,
+          "type": "Bool",
+          "metadata": { "schemaName": "mcb_HighRiskNotify", "description": "Environment variable: notify the account owner when a merchant turns high risk" }
+        }
+      },
+      "triggers": {
+        "When_a_merchant_turns_high_risk": {
+          "type": "OpenApiConnectionWebhook",
+          "inputs": {
+            "host": {
+              "connectionName": "shared_commondataserviceforapps",
+              "operationId": "SubscribeWebhookTrigger",
+              "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+            },
+            "parameters": {
+              "subscriptionRequest/message": 3,
+              "subscriptionRequest/entityname": "account",
+              "subscriptionRequest/scope": 4,
+              "subscriptionRequest/filteringattributes": "mcb_riskband",
+              "subscriptionRequest/filterexpression": "mcb_riskband eq 771000402"
+            },
+            "authentication": "@parameters('$authentication')"
+          }
+        }
+      },
+      "actions": {
+        "If_notifications_are_on": {
+          "type": "If",
+          "runAfter": {},
+          "expression": { "equals": [ "@parameters('Notify on high risk (mcb_HighRiskNotify)')", true ] },
+          "actions": {
+            "Get_the_account_owner": {
+              "type": "OpenApiConnection",
+              "runAfter": {},
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_commondataserviceforapps",
+                  "operationId": "GetItem",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_commondataserviceforapps"
+                },
+                "parameters": {
+                  "entityName": "systemusers",
+                  "recordId": "@triggerOutputs()?['body/_ownerid_value']",
+                  "$select": "internalemailaddress,firstname"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            },
+            "Send_the_owner_an_email": {
+              "type": "OpenApiConnection",
+              "runAfter": { "Get_the_account_owner": [ "Succeeded" ] },
+              "inputs": {
+                "host": {
+                  "connectionName": "shared_office365",
+                  "operationId": "SendEmailV2",
+                  "apiId": "/providers/Microsoft.PowerApps/apis/shared_office365"
+                },
+                "parameters": {
+                  "emailMessage/To": "@outputs('Get_the_account_owner')?['body/internalemailaddress']",
+                  "emailMessage/Subject": "@{triggerOutputs()?['body/name']} is now high risk",
+                  "emailMessage/Body": "<p>Hello @{outputs('Get_the_account_owner')?['body/firstname']},</p><p>The payments platform rated <strong>@{triggerOutputs()?['body/name']}</strong> (@{triggerOutputs()?['body/mcb_merchantid']}) high risk. The chargeback ratio is @{triggerOutputs()?['body/mcb_chargebackratio']}.</p><p>Please review the merchant before agreeing to new terms.</p>",
+                  "emailMessage/Importance": "High"
+                },
+                "authentication": "@parameters('$authentication')"
+              }
+            }
+          }
+        }
+      }
+    },
+    "templateName": ""
+  },
+  "schemaVersion": "1.0.0.0"
+}

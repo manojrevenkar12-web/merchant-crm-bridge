@@ -10,6 +10,7 @@
     <Project Path="src/Bridge.Drills/Bridge.Drills.csproj" />
     <Project Path="src/Bridge.Hosting/Bridge.Hosting.csproj" />
     <Project Path="src/Bridge.Api/Bridge.Api.csproj" />
+    <Project Path="src/Bridge.Alm/Bridge.Alm.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Bridge.Tests/Bridge.Tests.csproj" />
