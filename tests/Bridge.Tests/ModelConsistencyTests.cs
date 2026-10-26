@@ -79,4 +79,26 @@ public class ModelConsistencyTests
         PlatformField.KycVersion or PlatformField.StatusVersion or PlatformField.RiskVersion or PlatformField.VolumeVersion or PlatformField.PlatformVersion => 1L,
         _ => "x",
     };
+
+    internal static string RepoRoot()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "merchant-crm-bridge.slnx"))) dir = dir.Parent;
+        return dir?.FullName ?? throw new InvalidOperationException("repository root not found");
+    }
+
+    [Fact]
+    public void Every_registered_plugin_type_exists_in_the_plugin_assembly()
+    {
+        // The plug-in assembly targets .NET Framework and builds in CI; its source is checked here.
+        var source = File.ReadAllText(Path.Combine(RepoRoot(), "src", "Bridge.Plugins", "Plugins.cs"));
+        var types = Root.GetProperty("pluginSteps").EnumerateArray().Select(s => s.GetProperty("plugin").GetString()!)
+            .Concat(Root.GetProperty("customApis").EnumerateArray().Select(a => a.GetProperty("plugin").GetString()!)).Distinct().ToList();
+        Assert.NotEmpty(types);
+        foreach (var type in types)
+        {
+            Assert.StartsWith("MerchantCrmBridge.Plugins.", type, StringComparison.Ordinal);
+            Assert.Contains($"public sealed class {type["MerchantCrmBridge.Plugins.".Length..]} : PluginBase", source, StringComparison.Ordinal);
+        }
+    }
 }

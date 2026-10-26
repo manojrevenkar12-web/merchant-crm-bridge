@@ -1,0 +1,19 @@
+{
+  "version": "2.0",
+  "logging": {
+    "applicationInsights": {
+      "samplingSettings": { "isEnabled": true, "excludedTypes": "Request;Exception" },
+      "enableLiveMetricsFilters": true
+    },
+    "logLevel": { "default": "Information", "Function.platform-events": "Information", "Azure.Core": "Warning" }
+  },
+  "extensions": {
+    "kafka": {
+      "maxBatchSize": 1,
+      "subscriberIntervalInSeconds": 1,
+      "executorChannelCapacity": 1,
+      "channelFullRetryIntervalInMs": 50
+    }
+  },
+  "functionTimeout": "00:10:00"
+}

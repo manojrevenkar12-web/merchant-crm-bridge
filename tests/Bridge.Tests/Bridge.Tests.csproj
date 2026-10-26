@@ -2,12 +2,14 @@
   <!-- Unit and component tests: plug-in rules, the event mapper, contracts, the in-memory log, the
        Dataverse client against the emulator, the gateway, the applier, relay, consumer and reconciler. -->
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Bridge.Core\Bridge.Core.csproj" />
     <ProjectReference Include="..\..\src\Bridge.Dataverse\Bridge.Dataverse.csproj" />
     <ProjectReference Include="..\..\src\Bridge.Emulator\Bridge.Emulator.csproj" />
+    <ProjectReference Include="..\..\src\Bridge.Hosting\Bridge.Hosting.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\dataverse\model.json" Link="model.json" CopyToOutputDirectory="PreserveNewest" />

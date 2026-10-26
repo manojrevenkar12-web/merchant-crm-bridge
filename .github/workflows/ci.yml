@@ -1,0 +1,125 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  DOTNET_NOLOGO: "1"
+  DOTNET_CLI_TELEMETRY_OPTOUT: "1"
+
+jobs:
+  dotnet:
+    name: .NET build, unit, component, API contract tests and drills
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet restore merchant-crm-bridge.slnx
+      - run: dotnet build merchant-crm-bridge.slnx --no-restore -c Release
+      - name: Unit and component tests
+        run: dotnet test --project tests/Bridge.Tests --no-build -c Release
+      - name: API tests (OpenAPI contract, roles, replay, GraphQL)
+        run: dotnet test --project tests/Bridge.Api.Tests --no-build -c Release
+      - name: Event-log contract (in-memory)
+        run: dotnet test --project tests/Bridge.Kafka.Tests --no-build -c Release
+      - name: Sync drills (quick)
+        run: dotnet run --project src/Bridge.Drills --no-build -c Release -- --quick --out artifacts/drills
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: drills
+          path: artifacts/drills
+
+  kafka:
+    name: Against Apache Kafka (contract tests and drills)
+    runs-on: ubuntu-latest
+    services:
+      kafka:
+        image: apache/kafka:3.9.1
+        ports: ["9092:9092"]
+    env:
+      KAFKA_BOOTSTRAP: localhost:9092
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet build tests/Bridge.Kafka.Tests -c Release && dotnet build src/Bridge.Drills -c Release
+      - name: Wait for the broker
+        run: for i in $(seq 1 60); do (echo > /dev/tcp/localhost/9092) 2>/dev/null && exit 0; sleep 1; done; exit 1
+      - name: Event-log contract (Kafka)
+        run: dotnet test --project tests/Bridge.Kafka.Tests --no-build -c Release
+      - name: Sync drills on Kafka
+        run: dotnet run --project src/Bridge.Drills --no-build -c Release -- --quick --kafka localhost:9092 --out artifacts/drills-kafka
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: drills-kafka
+          path: artifacts/drills-kafka
+
+  plugins:
+    name: Dataverse plug-in assembly (.NET Framework 4.6.2, strong-named)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet build src/Bridge.Plugins -c Release
+      - name: The assembly is strong-named
+        run: |
+          python3 - <<'PY'
+          import struct, sys
+          data = open("src/Bridge.Plugins/bin/Release/net462/MerchantCrmBridge.Plugins.dll", "rb").read()
+          pe = struct.unpack_from("<I", data, 0x3C)[0]
+          opt = pe + 24
+          magic = struct.unpack_from("<H", data, opt)[0]
+          dd = opt + (96 if magic == 0x10B else 112)
+          clr_rva, _ = struct.unpack_from("<II", data, dd + 14 * 8)
+          sections = struct.unpack_from("<H", data, pe + 6)[0]
+          sh = opt + struct.unpack_from("<H", data, pe + 20)[0]
+          def off(rva):
+              for i in range(sections):
+                  va, size, raw = struct.unpack_from("<III", data, sh + i * 40 + 12)[0], struct.unpack_from("<I", data, sh + i * 40 + 8)[0], struct.unpack_from("<I", data, sh + i * 40 + 20)[0]
+                  if va <= rva < va + max(size, 1): return rva - va + raw
+          cli = off(clr_rva)
+          flags = struct.unpack_from("<I", data, cli + 16)[0]
+          sig_rva, sig_size = struct.unpack_from("<II", data, cli + 32)
+          print("CLR flags", hex(flags), "signature size", sig_size)
+          sys.exit(0 if flags & 0x8 and sig_size > 0 else 1)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: plugins
+          path: src/Bridge.Plugins/bin/Release/net462/MerchantCrmBridge.Plugins.dll
+
+  functions:
+    name: Function App (isolated worker)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+      - run: dotnet publish src/Bridge.Functions -c Release -o artifacts/functions
+      - name: The Kafka trigger and timers are indexed
+        run: |
+          test -f artifacts/functions/functions.metadata
+          for f in platform-events outbox-relay reconciler; do grep -q "\"name\": *\"$f\"" artifacts/functions/functions.metadata || { echo "missing $f"; cat artifacts/functions/functions.metadata; exit 1; }; done
+          grep -q kafkaTrigger artifacts/functions/functions.metadata
+          grep -q exponentialBackoff artifacts/functions/functions.metadata
+      - uses: actions/upload-artifact@v4
+        with:
+          name: functions
+          path: artifacts/functions

@@ -84,7 +84,7 @@ public sealed class Drill(DrillConfig config, string? kafkaBootstrap)
         else
         {
             kafka = new KafkaEventLog(new KafkaOptions { BootstrapServers = kafkaBootstrap, Partitions = 4 });
-            await kafka.EnsureTopicsAsync([Topics.PlatformEvents, Topics.CrmEvents, Topics.PlatformEventsDlq], ct);
+            await kafka.RecreateTopicsAsync([Topics.PlatformEvents, Topics.CrmEvents, Topics.PlatformEventsDlq], ct); // each drill starts from empty topics
             log = kafka;
         }
 

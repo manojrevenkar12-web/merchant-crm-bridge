@@ -1,3 +1,4 @@
+using Bridge.Hosting;
 using Bridge.Api;
 using Bridge.Core.Ports;
 

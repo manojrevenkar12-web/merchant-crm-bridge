@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Settings and composition shared by the App Service host (Bridge.Api) and the Function App
+       (Bridge.Functions), so both run the same services from the same configuration. -->
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <PackageReference Include="Azure.Identity" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Bridge.Core\Bridge.Core.csproj" />
+    <ProjectReference Include="..\Bridge.Dataverse\Bridge.Dataverse.csproj" />
+    <ProjectReference Include="..\Bridge.Kafka\Bridge.Kafka.csproj" />
+    <ProjectReference Include="..\Bridge.Platform\Bridge.Platform.csproj" />
+  </ItemGroup>
+</Project>

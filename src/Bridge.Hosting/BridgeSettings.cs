@@ -1,4 +1,4 @@
-namespace Bridge.Api;
+namespace Bridge.Hosting;
 
 /// <summary>Configuration (appsettings, environment variables, Key Vault references in Azure).</summary>
 public sealed class BridgeSettings
@@ -13,6 +13,10 @@ public sealed class BridgeSettings
     public int Consumers { get; set; } = 2;
     public TimeSpan RelayInterval { get; set; } = TimeSpan.FromSeconds(2);
     public TimeSpan ReconcileInterval { get; set; } = TimeSpan.FromMinutes(15);
+
+    /// <summary>Function App timers (NCRONTAB with seconds); the App Service host uses the intervals above.</summary>
+    public string RelaySchedule { get; set; } = "*/5 * * * * *";
+    public string ReconcileSchedule { get; set; } = "0 */15 * * * *";
 
     public DataverseSettings Dataverse { get; set; } = new();
     public KafkaSettings Kafka { get; set; } = new();

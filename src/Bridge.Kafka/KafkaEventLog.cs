@@ -56,6 +56,39 @@ public sealed class KafkaEventLog : IEventLog, IDisposable
         }
     }
 
+    /// <summary>Deletes and creates the topics again (drills and tests only: every run starts from empty topics).</summary>
+    public async Task RecreateTopicsAsync(IReadOnlyCollection<string> topics, CancellationToken ct)
+    {
+        var config = new AdminClientConfig();
+        _options.Apply(config);
+        using var admin = new AdminClientBuilder(config).Build();
+        var existing = admin.GetMetadata(TimeSpan.FromSeconds(10)).Topics.Select(t => t.Topic).Where(topics.Contains).ToList();
+        if (existing.Count > 0)
+        {
+            try { await admin.DeleteTopicsAsync(existing).ConfigureAwait(false); }
+            catch (DeleteTopicsException ex) when (ex.Results.All(r => r.Error.Code is ErrorCode.UnknownTopicOrPart or ErrorCode.NoError)) { }
+        }
+        // Deletion completes in the background: wait until the broker no longer lists the topics, then create.
+        for (var i = 0; i < 120 && admin.GetMetadata(TimeSpan.FromSeconds(10)).Topics.Any(t => topics.Contains(t.Topic) && !t.Error.IsError); i++)
+            await Task.Delay(TimeSpan.FromMilliseconds(250), ct).ConfigureAwait(false);
+        for (var attempt = 0; ; attempt++)
+        {
+            try
+            {
+                await admin.CreateTopicsAsync(topics.Select(t => new TopicSpecification { Name = t, NumPartitions = _options.Partitions, ReplicationFactor = _options.ReplicationFactor })).ConfigureAwait(false);
+                return;
+            }
+            catch (CreateTopicsException ex) when (attempt < 40 && ex.Results.Any(r => r.Error.Code != ErrorCode.TopicAlreadyExists))
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(500), ct).ConfigureAwait(false);
+            }
+            catch (CreateTopicsException ex) when (ex.Results.All(r => r.Error.Code is ErrorCode.TopicAlreadyExists or ErrorCode.NoError))
+            {
+                return; // created by an earlier attempt that reported a partial failure
+            }
+        }
+    }
+
     public async Task<LogPosition> ProduceAsync(string topic, string key, string value, IReadOnlyDictionary<string, string>? headers, CancellationToken ct)
     {
         var message = new Message<string, string> { Key = key, Value = value, Headers = [] };

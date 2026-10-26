@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- The plug-in assembly registered in Dataverse: .NET Framework 4.6.2, strong-named, the Dataverse SDK
+       only. Thin adapters over the rules in Bridge.Plugins.Logic, whose files are compiled in here. Built in
+       CI (the SDK package comes from nuget.org); the rules themselves are tested on .NET 10. -->
+  <PropertyGroup>
+    <TargetFramework>net462</TargetFramework>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <AssemblyName>MerchantCrmBridge.Plugins</AssemblyName>
+    <RootNamespace>MerchantCrmBridge.Plugins</RootNamespace>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>MerchantCrmBridge.Plugins.snk</AssemblyOriginatorKeyFile>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <NoWarn>$(NoWarn);CA1845;CA1846;CA1847;CA1865;CA1866;CA1867;CA1510;CA1512;CA1513;CA1862;CA1864;CA1031;CA1062</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CrmSdk.CoreAssemblies" />
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" PrivateAssets="all" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\Bridge.Plugins.Logic\*.cs" LinkBase="Logic" />
+  </ItemGroup>
+</Project>

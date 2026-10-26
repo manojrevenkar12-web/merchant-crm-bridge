@@ -1,0 +1,7 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- One set of delivery-rule tests, run against the in-memory log (always) and against a real Kafka
+       broker when KAFKA_BOOTSTRAP is set (CI starts one), so the drills' in-memory log behaves like Kafka. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Bridge.Kafka\Bridge.Kafka.csproj" />
+  </ItemGroup>
+</Project>

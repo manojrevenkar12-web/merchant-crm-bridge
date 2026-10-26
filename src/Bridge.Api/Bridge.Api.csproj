@@ -9,9 +9,9 @@
   <ItemGroup>
     <PackageReference Include="HotChocolate.AspNetCore" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
-    <PackageReference Include="Azure.Identity" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Bridge.Hosting\Bridge.Hosting.csproj" />
     <ProjectReference Include="..\Bridge.Core\Bridge.Core.csproj" />
     <ProjectReference Include="..\Bridge.Dataverse\Bridge.Dataverse.csproj" />
     <ProjectReference Include="..\Bridge.Kafka\Bridge.Kafka.csproj" />
