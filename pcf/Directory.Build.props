@@ -1,0 +1,3 @@
+<Project>
+  <!-- PCF and Dataverse solution projects use their own MSBuild SDK packages; stop the repository's .NET settings here. -->
+</Project>

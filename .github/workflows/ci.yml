@@ -206,7 +206,8 @@ jobs:
       - uses: actions/upload-artifact@v5
         with:
           name: pcf-solution
-          path: artifacts/MerchantCrmBridgeControls/bin/Release/*.zip
+          path: artifacts/pcf-solution/*.zip
+          if-no-files-found: error
 
   infra:
     name: Bicep (build and lint)
