@@ -202,12 +202,7 @@ jobs:
         run: npm ci && npm test && npm run build
       - run: dotnet tool install --global Microsoft.PowerApps.CLI.Tool
       - name: Package it in a solution (managed and unmanaged)
-        run: |
-          mkdir -p artifacts/MerchantCrmBridgeControls && cd artifacts/MerchantCrmBridgeControls
-          pac solution init --publisher-name merchantcrmbridge --publisher-prefix mcb
-          pac solution add-reference --path ../../pcf/MerchantSyncStatus
-          dotnet build -c Release -p:SolutionPackageType=Both
-          find bin -name "*.zip" -print
+        run: scripts/ci/annotated.sh scripts/ci/pack-pcf-solution.sh
       - uses: actions/upload-artifact@v5
         with:
           name: pcf-solution
