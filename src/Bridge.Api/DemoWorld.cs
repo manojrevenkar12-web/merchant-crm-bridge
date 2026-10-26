@@ -35,7 +35,7 @@ public sealed class DemoWorld : IHostedService, IAsyncDisposable
         _emulatorUrl = emulatorUrl;
         _platformUrl = platformUrl;
         Log = log;
-        var chaos = new ChaosOptions { Duplicate = 0.08, Reorder = 0.08, Drop = 0.02, OldVolumeSchema = 0.3, PoisonPerHundredTicks = 2 };
+        var chaos = new ChaosOptions { Duplicate = 0.08, Reorder = 0.08, Drop = 0.02, OldVolumeSchema = 0.3, PoisonPerHundredTicks = 0.4 };
         Simulator = new Simulator(Log, chaos, seed: 2026, TimeProvider.System);
     }
 
