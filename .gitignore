@@ -14,3 +14,5 @@ web/playwright-report/
 local.settings.json
 /vendor/
 artifacts/
+src/Bridge.Api/wwwroot/*
+!src/Bridge.Api/wwwroot/.gitkeep

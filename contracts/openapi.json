@@ -1,0 +1,986 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "merchant-crm-bridge",
+    "version": "1.0.0",
+    "description": "Operations API of the bridge between Dynamics 365 (Dataverse) and the payments platform. Reads need the app role Sync.Read (or Sync.Operate); commands need Sync.Operate. Tokens are issued by Microsoft Entra ID for the audience api://merchant-crm-bridge. Breaking changes get a new /v2 path; additive changes (new optional fields, new endpoints) stay in /v1."
+  },
+  "servers": [
+    {
+      "url": "/"
+    }
+  ],
+  "security": [
+    {
+      "entra": [
+        "Sync.Read"
+      ]
+    }
+  ],
+  "paths": {
+    "/healthz": {
+      "get": {
+        "operationId": "health",
+        "security": [],
+        "summary": "Liveness",
+        "responses": {
+          "200": {
+            "description": "Alive",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "status"
+                  ],
+                  "properties": {
+                    "status": {
+                      "const": "ok"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/overview": {
+      "get": {
+        "operationId": "getOverview",
+        "summary": "Sync health at a glance",
+        "responses": {
+          "200": {
+            "description": "Overview",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Overview"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/v1/merchants": {
+      "get": {
+        "operationId": "listMerchants",
+        "summary": "Merchants with their lifecycle stage and sync versions",
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "maxLength": 100
+            }
+          },
+          {
+            "name": "stage",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "prospect",
+                "onboarding",
+                "kyc_pending",
+                "approved",
+                "rejected",
+                "boarded",
+                "live",
+                "restricted",
+                "terminated"
+              ]
+            }
+          },
+          {
+            "name": "top",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 500,
+              "default": 100
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Merchants",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/MerchantSummary"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/v1/merchants/{merchantId}": {
+      "get": {
+        "operationId": "getMerchant",
+        "summary": "One merchant: CRM and platform side by side, and its event timeline",
+        "parameters": [
+          {
+            "name": "merchantId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^M-[0-9]{6}$"
+            },
+            "example": "M-004211"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Merchant",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MerchantDetail"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid merchant id",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not in the CRM",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/v1/dead-letters": {
+      "get": {
+        "operationId": "listDeadLetters",
+        "summary": "Events the consumer could not apply",
+        "responses": {
+          "200": {
+            "description": "Dead letters",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DeadLetter"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/v1/dead-letters/{partition}/{offset}/replay": {
+      "post": {
+        "operationId": "replayDeadLetter",
+        "security": [
+          {
+            "entra": [
+              "Sync.Operate"
+            ]
+          }
+        ],
+        "summary": "Put a dead letter back on the platform topic, at most once",
+        "parameters": [
+          {
+            "name": "partition",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          {
+            "name": "offset",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        ],
+        "responses": {
+          "202": {
+            "description": "Replayed; the consumer will apply it like any other event"
+          },
+          "404": {
+            "description": "No dead letter there",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Already replayed",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/v1/drift": {
+      "get": {
+        "operationId": "listDrift",
+        "summary": "Platform-owned values changed in the CRM by hand",
+        "responses": {
+          "200": {
+            "description": "Drift findings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/DriftItem"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    },
+    "/v1/reconcile": {
+      "post": {
+        "operationId": "reconcile",
+        "security": [
+          {
+            "entra": [
+              "Sync.Operate"
+            ]
+          }
+        ],
+        "summary": "Compare every merchant with the platform now and heal what events missed",
+        "responses": {
+          "200": {
+            "description": "Report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReconcileReport"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Another reconciler holds the lease",
+            "content": {
+              "application/problem+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Problem"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "entra": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token",
+            "scopes": {
+              "Sync.Read": "Read sync state",
+              "Sync.Operate": "Replay dead letters and reconcile"
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "Unauthorized": {
+        "description": "No valid token"
+      },
+      "Forbidden": {
+        "description": "The token lacks the app role"
+      }
+    },
+    "schemas": {
+      "StageCount": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "count"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string",
+            "enum": [
+              "prospect",
+              "onboarding",
+              "kyc_pending",
+              "approved",
+              "rejected",
+              "boarded",
+              "live",
+              "restricted",
+              "terminated"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "OutcomeCount": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "outcome",
+          "count"
+        ],
+        "properties": {
+          "outcome": {
+            "type": "string",
+            "enum": [
+              "applied",
+              "stale",
+              "rejected",
+              "unknown"
+            ]
+          },
+          "count": {
+            "type": "integer",
+            "minimum": 0
+          }
+        }
+      },
+      "MinuteCount": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "minute",
+          "applied",
+          "stale",
+          "rejected"
+        ],
+        "properties": {
+          "minute": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "applied": {
+            "type": "integer"
+          },
+          "stale": {
+            "type": "integer"
+          },
+          "rejected": {
+            "type": "integer"
+          }
+        }
+      },
+      "Overview": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "merchants",
+          "stages",
+          "outboxPending",
+          "recentOutcomes",
+          "throughput",
+          "deadLetters",
+          "consumerLag",
+          "driftNeedsReview",
+          "lastReconcileAt",
+          "lastReconcileHealed",
+          "lastRelayAt"
+        ],
+        "properties": {
+          "merchants": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "stages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StageCount"
+            }
+          },
+          "outboxPending": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "recentOutcomes": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OutcomeCount"
+            }
+          },
+          "throughput": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/MinuteCount"
+            }
+          },
+          "deadLetters": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "consumerLag": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "driftNeedsReview": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "lastReconcileAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "lastReconcileHealed": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "lastRelayAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          }
+        }
+      },
+      "MerchantSummary": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "merchantId",
+          "legalName",
+          "stage",
+          "pricingPlan",
+          "riskBand",
+          "platformStatus",
+          "lastSyncedOn",
+          "crmVersion",
+          "platformVersion"
+        ],
+        "properties": {
+          "merchantId": {
+            "type": "string",
+            "pattern": "^M-[0-9]{6}$"
+          },
+          "legalName": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "stage": {
+            "type": "string",
+            "enum": [
+              "prospect",
+              "onboarding",
+              "kyc_pending",
+              "approved",
+              "rejected",
+              "boarded",
+              "live",
+              "restricted",
+              "terminated"
+            ]
+          },
+          "pricingPlan": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "riskBand": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "platformStatus": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "lastSyncedOn": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "crmVersion": {
+            "type": "integer"
+          },
+          "platformVersion": {
+            "type": "integer"
+          }
+        }
+      },
+      "AspectView": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "aspect",
+          "crm",
+          "platform",
+          "crmVersion",
+          "platformVersion",
+          "inSync"
+        ],
+        "properties": {
+          "aspect": {
+            "type": "string",
+            "enum": [
+              "KYC",
+              "Status",
+              "Risk",
+              "Platform account"
+            ]
+          },
+          "crm": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "platform": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "crmVersion": {
+            "type": "integer"
+          },
+          "platformVersion": {
+            "type": "integer"
+          },
+          "inSync": {
+            "type": "boolean"
+          }
+        }
+      },
+      "TimelineEntry": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "at",
+          "direction",
+          "eventType",
+          "sequence",
+          "status",
+          "detail",
+          "eventId"
+        ],
+        "properties": {
+          "at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "direction": {
+            "type": "string",
+            "enum": [
+              "crm-to-platform",
+              "platform-to-crm"
+            ]
+          },
+          "eventType": {
+            "type": "string"
+          },
+          "sequence": {
+            "type": "integer"
+          },
+          "status": {
+            "type": "string",
+            "description": "Outbox status (pending, sent) for crm-to-platform; outcome (applied, stale, rejected) for platform-to-crm."
+          },
+          "detail": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "eventId": {
+            "type": "string"
+          }
+        }
+      },
+      "MerchantDetail": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "summary",
+          "contactEmail",
+          "legalForm",
+          "country",
+          "ibanMasked",
+          "mcc",
+          "platformAccountId",
+          "kycDecision",
+          "kycReason",
+          "chargebackRatio",
+          "volumeMonth",
+          "lastMonthVolume",
+          "lastMonthTransactions",
+          "terminals",
+          "aspects",
+          "platformReachable",
+          "timeline"
+        ],
+        "properties": {
+          "summary": {
+            "$ref": "#/components/schemas/MerchantSummary"
+          },
+          "contactEmail": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "legalForm": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "country": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "ibanMasked": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Only the country, check digits and last four characters; the rest is masked.",
+            "pattern": "^[A-Z]{2}[0-9]{2} •••• [0-9A-Z]{4}$"
+          },
+          "mcc": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "platformAccountId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "kycDecision": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "kycReason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "chargebackRatio": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "volumeMonth": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "lastMonthVolume": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "lastMonthTransactions": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "terminals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "aspects": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/AspectView"
+            }
+          },
+          "platformReachable": {
+            "type": "boolean"
+          },
+          "timeline": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TimelineEntry"
+            }
+          }
+        }
+      },
+      "DeadLetter": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "partition",
+          "offset",
+          "merchantId",
+          "eventId",
+          "eventType",
+          "reason",
+          "detail",
+          "source",
+          "deliveries",
+          "replayed"
+        ],
+        "properties": {
+          "partition": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "merchantId": {
+            "type": "string"
+          },
+          "eventId": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "eventType": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "enum": [
+              "contract",
+              "unknown_merchant",
+              "error",
+              "unknown"
+            ]
+          },
+          "detail": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "deliveries": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "replayed": {
+            "type": "boolean"
+          }
+        }
+      },
+      "DriftItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "merchantId",
+          "field",
+          "crmValue",
+          "platformValue",
+          "resolution",
+          "detectedOn"
+        ],
+        "properties": {
+          "merchantId": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "crmValue": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "platformValue": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "resolution": {
+            "type": "string",
+            "enum": [
+              "needs_review",
+              "healed"
+            ]
+          },
+          "detectedOn": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "ReconcileReport": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "checked",
+          "healed",
+          "needsReview",
+          "missingOnPlatform",
+          "leaseHeld"
+        ],
+        "properties": {
+          "checked": {
+            "type": "integer"
+          },
+          "healed": {
+            "type": "integer"
+          },
+          "needsReview": {
+            "type": "integer"
+          },
+          "missingOnPlatform": {
+            "type": "integer"
+          },
+          "leaseHeld": {
+            "type": "boolean"
+          }
+        }
+      },
+      "Problem": {
+        "type": "object",
+        "description": "RFC 9457 problem details",
+        "required": [
+          "title",
+          "status"
+        ],
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "type": "integer"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "traceId": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

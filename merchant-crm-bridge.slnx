@@ -8,8 +8,10 @@
     <Project Path="src/Bridge.Platform/Bridge.Platform.csproj" />
     <Project Path="src/Bridge.PlatformSim/Bridge.PlatformSim.csproj" />
     <Project Path="src/Bridge.Drills/Bridge.Drills.csproj" />
+    <Project Path="src/Bridge.Api/Bridge.Api.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Bridge.Tests/Bridge.Tests.csproj" />
+    <Project Path="tests/Bridge.Api.Tests/Bridge.Api.Tests.csproj" />
   </Folder>
 </Solution>
